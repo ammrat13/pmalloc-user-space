@@ -60,7 +60,9 @@ foreach(cfg static shared)
   target_sources(${target}
     PUBLIC FILE_SET HEADERS
     BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/"
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/pmalloc.h")
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/pmalloc.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.h")
   if(PMALLOC_REENTRANT)
     target_link_libraries(${target} PUBLIC Threads::Threads)
   endif()
