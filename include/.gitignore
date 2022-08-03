@@ -1,0 +1,3 @@
+# Ignore generated headers
+# If a file a/b/c.h is ignored here, it was generated from a/b/c.in.h.
+pmalloc/config.h

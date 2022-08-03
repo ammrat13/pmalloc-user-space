@@ -15,6 +15,27 @@ set(CMAKE_C_EXTENSIONS OFF)
 set(INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/pmalloc/cmake/")
 
 
+# Aliases toget which OS we're on. This way, the header file doesn't define UNIX
+# or WIN32 directly.
+set(PMALLOC_UNIX "${UNIX}")
+set(PMALLOC_WIN32 "${WIN32}")
+# Whether to have thread-safe functions
+set(PMALLOC_REENTRANT ON CACHE BOOL "Make the functions thread-safe")
+
+# If we want reentrancy, we need a thread library
+# Set variables based on which one we find
+if(PMALLOC_REENTRANT)
+  find_package(Threads REQUIRED)
+  set(PMALLOC_REENTRANT_PTHREADS "${CMAKE_USE_PTHREADS_INIT}")
+  set(PMALLOC_REENTRANT_WIN32_THREADS "${CMAKE_USE_WIN32_THREADS_INIT}")
+endif()
+
+# Add configuration information to headers
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.in.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.h")
+
+
 # Add targets for both the static and shared libraries. Both of them share the
 # same include directories and library base name
 foreach(cfg static shared)
@@ -34,7 +55,10 @@ foreach(cfg static shared)
   target_sources(${target}
     PUBLIC FILE_SET HEADERS
     BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/"
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc.h")
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/pmalloc.h")
+  if(PMALLOC_REENTRANT)
+    target_link_libraries(${target} PUBLIC Threads::Threads)
+  endif()
 
   # Install the target under its own export. The export it into a file for
   # later use, and install the export file.
