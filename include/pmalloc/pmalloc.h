@@ -17,23 +17,6 @@
 #ifndef PMALLOC_PMALLOC_H_
 #define PMALLOC_PMALLOC_H_
 
-#include "pmalloc/config.h"
-
-#if defined(PMALLOC_UNIX) || defined(DOXYGEN)
-    #include <stddef.h>
-
-    /** \brief Size type used by `pmalloc`
-     *
-     * This typedef exists for portability. On Linux this is `size_t` from
-     * `stddef.h`, while on Windows this is `SIZE_T` from `BaseTsd.h`.
-     */
-    typedef size_t pmalloc_size_t;
-
-#elif defined(PMALLOC_WIN32)
-    #include <BaseTsd.h>
-    typedef SIZE_T pmalloc_size_t;
-#endif
-
 
 /** \brief Opaque handle to a pool managed by `pmalloc`
  *
@@ -86,12 +69,12 @@ typedef struct pmalloc_pool_t pmalloc_pool_t;
  *
  * \sa pmalloc_destroy_pool()
  */
-pmalloc_pool_t *pmalloc_create_custom_pool(pmalloc_size_t page_size);
+pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size);
 
 /** \brief Page size to use when creating a pool if none is specified
  * \sa pmalloc_create_pool()
  */
-static const pmalloc_size_t PMALLOC_DEFAULT_PAGE_SIZE = 4096;
+static const size_t PMALLOC_DEFAULT_PAGE_SIZE = 4096;
 
 /** \brief Calls pmalloc_create_custom_pool() with the default page size
  * \sa PMALLOC_DEFAULT_PAGE_SIZE
@@ -151,21 +134,18 @@ void pmalloc_protect_pool(pmalloc_pool_t *pool);
  * \param align The log-base-2 of the alignment needed
  * \return Pointer to the allocated memory
  */
-void *pmalloc_align(
-    pmalloc_pool_t *pool,
-    pmalloc_size_t size,
-    pmalloc_size_t align);
+void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align);
 
 /** \brief Alignment to use for allocation when none is specified
  * \sa pmalloc()
  */
-static const pmalloc_size_t PMALLOC_DEFAULT_ALIGNMENT = 0;
+static const size_t PMALLOC_DEFAULT_ALIGNMENT = 0;
 
 /** \brief Calls pmalloc_align() with the supplied arguments and the default
  *         alignment
  * \sa pmalloc_align()
  */
-static inline void *pmalloc(pmalloc_pool_t *pool, pmalloc_size_t size) {
+static inline void *pmalloc(pmalloc_pool_t *pool, size_t size) {
     pmalloc_align(pool, size, PMALLOC_DEFAULT_ALIGNMENT);
 }
 
