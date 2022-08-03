@@ -31,4 +31,6 @@
 #   cmakedefine PMALLOC_REENTRANT_WIN32_THREADS
 #endif  // PMALLOC_REENTRANT
 
+/**@}*/
+
 #endif  // PMALLOC_CONFIG_H_
