@@ -2,6 +2,7 @@
 // Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
 /** \file
  *  \defgroup arch Architecture Specific Code
+ *  \ingroup private
  *  \brief Code that differs on different operating systems
  *
  * To facilitate testing, the core functionality of `pmalloc` is isolated from

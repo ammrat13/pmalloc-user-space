@@ -2,7 +2,7 @@
 // Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
 /** \file
  *  \defgroup config CMake Configuration
- *  \ingroup public
+ *  \ingroup private
  *  \brief Header containing variables configured by CMake
  *
  * This project is built using CMake. It provides variables the library needs to
