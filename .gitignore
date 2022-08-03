@@ -1,5 +1,6 @@
 # Build output
 build/
+doc/
 
 # IDE files
 .vscode/
