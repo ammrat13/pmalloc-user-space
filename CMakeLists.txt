@@ -57,14 +57,21 @@ foreach(cfg static shared)
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
   target_sources(${target}
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/pmalloc.c")
+  if(PMALLOC_REENTRANT)
+    target_link_libraries(${target} PUBLIC Threads::Threads)
+  endif()
+
+  # The custom file set of all the headers to install.
   target_sources(${target}
     PUBLIC FILE_SET HEADERS
     BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/"
-    FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/pmalloc.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.h")
-  if(PMALLOC_REENTRANT)
-    target_link_libraries(${target} PUBLIC Threads::Threads)
+    FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/pmalloc.h")
+
+  # Turn warnings into errors. We shouldn't have any warnings to begin with.
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /W4 /WX)
+  else()
+    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror)
   endif()
 
   # Install the target under its own export. The export it into a file for

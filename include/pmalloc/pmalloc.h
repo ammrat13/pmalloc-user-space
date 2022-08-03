@@ -17,6 +17,8 @@
 #ifndef PMALLOC_PMALLOC_H_
 #define PMALLOC_PMALLOC_H_
 
+#include <stddef.h>
+
 
 /** \brief Opaque handle to a pool managed by `pmalloc`
  *
@@ -146,7 +148,7 @@ static const size_t PMALLOC_DEFAULT_ALIGNMENT = 0;
  * \sa pmalloc_align()
  */
 static inline void *pmalloc(pmalloc_pool_t *pool, size_t size) {
-    pmalloc_align(pool, size, PMALLOC_DEFAULT_ALIGNMENT);
+    return pmalloc_align(pool, size, PMALLOC_DEFAULT_ALIGNMENT);
 }
 
 /**@}*/
