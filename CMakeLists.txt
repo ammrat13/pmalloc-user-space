@@ -35,6 +35,11 @@ configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.in.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.h")
 
+# TODO: Add Windows support
+if(PMALLOC_WIN32)
+  message(FATAL_ERROR "Windows is not currently supported")
+endif()
+
 
 # Add targets for both the static and shared libraries. Both of them share the
 # same include directories and library base name
