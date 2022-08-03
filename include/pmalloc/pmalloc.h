@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 // Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
 /** \file
+ *  \defgroup public Public Interface
  *  \brief Public interface for `pmalloc`
  *
  * The interface downstream consumers use to access this library. Its core
@@ -9,6 +10,8 @@
  * also mark a pool as read-only, causing all the objects currently allocated in
  * it to fault on modification. New objects can still be created in that pool,
  * and those can be written to.
+ *
+ * @{
  */
 
 #ifndef PMALLOC_PMALLOC_H_
@@ -148,6 +151,8 @@ static const size_t PMALLOC_DEFAULT_ALIGNMENT = 0;
 static inline void *pmalloc(pmalloc_pool_t *pool, size_t size) {
     pmalloc_align(pool, size, PMALLOC_DEFAULT_ALIGNMENT);
 }
+
+/**@}*/
 
 /**@}*/
 
