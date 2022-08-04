@@ -1,0 +1,3 @@
+# Ignore generated files
+# If a file a/b/c is ignored here, it was generated from a/b/c.in.
+pmalloc-config.cmake

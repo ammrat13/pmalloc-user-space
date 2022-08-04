@@ -24,6 +24,9 @@
 /** \defgroup heap Heap Functions
  *  \brief Platform specific code to allocate and free pools on the heap
  *
+ * These functions should never return `NULL` if they fail. Instead, they should
+ * abort the program.
+ *
  * \sa pmalloc_pool_t
  *
  * @{
@@ -38,6 +41,9 @@ void pmalloc_free_pool(void *ptr);
 
 /** \defgroup page Paging Functions
  *  \brief Platform specific code to manage pages
+ *
+ * These functions should never return `NULL` if they fail. Instead, they should
+ * abort the program.
  *
  * @{
  */
@@ -58,6 +64,8 @@ void pmalloc_markro_page(void *ptr, size_t length);
 
 /** \defgroup lock Mutual Exclusion
  *  \brief Platform specific code for mutual exclusion
+ *
+ * If these functions fail, they should abort the program.
  *
  * @{
  */

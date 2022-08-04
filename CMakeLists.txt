@@ -19,7 +19,8 @@ set(INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/pmalloc/cmake/")
 
 
 # Figure out what platform we're on and set variables accordingly. Die if we
-# don't recognize the platform
+# don't recognize the platform. If we do, include platform specific
+# configuration.
 if(UNIX)
   if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(PMALLOC_LINUX ON)
@@ -32,6 +33,7 @@ endif()
 if(NOT DEFINED arch)
   message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM}")
 endif()
+include("cmake/arch-${arch}.cmake" OPTIONAL)
 
 # Whether to have thread-safe functions
 set(PMALLOC_THREADS ON CACHE BOOL "Make the functions thread-safe")
@@ -57,7 +59,6 @@ endif()
 
 # Add targets for the libraries we were told to build. Both of them share the
 # same include directories and library base name.
-set(cfg_list "")
 foreach(cfg static shared)
   string(TOUPPER ${cfg} lib_type)
   set(target pmalloc-${cfg})
@@ -110,9 +111,10 @@ endforeach()
 
 # Create and install the package configuration file. Be sure to pass the path
 # where all the configurations were installed.
-configure_package_config_file("pmalloc-config.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/pmalloc-config.cmake"
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake"
   INSTALL_DESTINATION "${INSTALL_CONFIGDIR}"
   PATH_VARS INSTALL_CONFIGDIR)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pmalloc-config.cmake"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/pmalloc-config.cmake"
   DESTINATION "${INSTALL_CONFIGDIR}")
