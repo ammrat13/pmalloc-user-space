@@ -22,9 +22,9 @@ typedef struct pmalloc_page_header_t pmalloc_page_header_t;
 /** \brief Metadata for each page
  *
  * Each page in the linked list requires some metadata, like the pointer to the
- * next page, the offset of the "base pointer", whether or not it's read only,
- * and locks for mutal exclusion. This structure contains all that. It's placed
- * at the very start of a page.
+ * next page, the offset of the "base pointer", and whether or not it's read
+ * only. This structure contains all that. It's placed at the very start of a
+ * page.
  *
  * Allocation within a page goes from high memory to low memory. This is
  * apparently more efficient according to <a
@@ -48,7 +48,6 @@ typedef struct pmalloc_page_header_t pmalloc_page_header_t;
 struct pmalloc_page_header_t {
     pmalloc_page_header_t *const next;  ///< Next page in the linked list
     const size_t size;  ///< The size of this page in bytes
-    bool ro;  ///< Whether this page has (ever) been marked as read only.
 
     /** \brief "Boundary pointer"'s offset from the start of the page
      *
@@ -58,13 +57,7 @@ struct pmalloc_page_header_t {
      */
     size_t bp_offset;
 
-#if defined(PMALLOC_REENTRANT) || defined(DOXYGEN)
-    /** \brief Mutex on this structure's fields
-     * \sa pmalloc_page_header_t::ro
-     * \sa pmalloc_page_header_t::bp_offset
-     */
-    pmalloc_mutex_t mutex;
-#endif
+    bool ro;  ///< Whether this page has (ever) been marked as read only.
 };
 
 
@@ -82,8 +75,16 @@ struct pmalloc_pool_t {
     pmalloc_page_header_t *head;  ///< First page in the linked list
     const size_t page_size;  ///< How much to allocate at once in bytes
 
-#if defined(PMALLOC_REENTRANT) || defined(DOXYGEN)
-    pmalloc_mutex_t mutex;  ///< Mutex on pmalloc_pool_t::head
+#if defined(PMALLOC_THREADS) || defined(DOXYGEN)
+    /** \brief Mutual exclusion on the pool
+     *
+     * Whenever anyone tries to do any action on the pool, they must hold this
+     * lock. One would think this would be inefficient, and that page-level
+     * locks would be more performant. In reality, since all allocations happen
+     * from the front-most page, that lock just replaces this one. It also leads
+     * to more complexity.
+     */
+    pmalloc_mutex_t mutex;
 #endif
 };
 

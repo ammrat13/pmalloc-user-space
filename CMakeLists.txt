@@ -8,6 +8,9 @@ project(pmalloc LANGUAGES C)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+option(BUILD_STATIC_LIBS "Build static libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_EXTENSIONS OFF)
 
@@ -15,19 +18,30 @@ set(CMAKE_C_EXTENSIONS OFF)
 set(INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/pmalloc/cmake/")
 
 
-# Aliases toget which OS we're on. This way, the header file doesn't define UNIX
-# or WIN32 directly.
-set(PMALLOC_UNIX "${UNIX}")
-set(PMALLOC_WIN32 "${WIN32}")
-# Whether to have thread-safe functions
-set(PMALLOC_REENTRANT ON CACHE BOOL "Make the functions thread-safe")
+# Figure out what platform we're on and set variables accordingly. Die if we
+# don't recognize the platform
+if(UNIX)
+  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(PMALLOC_LINUX ON)
+    set(arch "linux")
+  endif()
+elseif(WIN32)
+  set(PMALLOC_WIN32 ON)
+  set(arch "win32")
+endif()
+if(NOT DEFINED arch)
+  message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM}")
+endif()
 
-# If we want reentrancy, we need a thread library
-# Set variables based on which one we find
-if(PMALLOC_REENTRANT)
+# Whether to have thread-safe functions
+set(PMALLOC_THREADS ON CACHE BOOL "Make the functions thread-safe")
+
+# If we want thread safety, we need a thread library. Set variables based on
+# which one we find
+if(PMALLOC_THREADS)
   find_package(Threads REQUIRED)
-  set(PMALLOC_REENTRANT_PTHREADS "${CMAKE_USE_PTHREADS_INIT}")
-  set(PMALLOC_REENTRANT_WIN32_THREADS "${CMAKE_USE_WIN32_THREADS_INIT}")
+  set(PMALLOC_PTHREADS "${CMAKE_USE_PTHREADS_INIT}")
+  set(PMALLOC_WIN32_THREADS "${CMAKE_USE_WIN32_THREADS_INIT}")
 endif()
 
 # Add configuration information to headers
@@ -36,28 +50,35 @@ configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.h")
 
 # TODO: Add Windows support
-if(PMALLOC_WIN32)
+if(arch STREQUAL "win32")
   message(FATAL_ERROR "Windows is not currently supported")
 endif()
 
 
-# Add targets for both the static and shared libraries. Both of them share the
-# same include directories and library base name
+# Add targets for the libraries we were told to build. Both of them share the
+# same include directories and library base name.
+set(cfg_list "")
 foreach(cfg static shared)
   string(TOUPPER ${cfg} lib_type)
   set(target pmalloc-${cfg})
+
+  # Break early if we're not supposed to build this
+  if(NOT BUILD_${lib_type}_LIBS)
+    continue()
+  endif()
 
   # CMake doesn't distinguish between PUBLIC and PRIVATE headers. So, we mark
   # all the headers as PRIVATE and install later. We do this by a custom file
   # set.
   add_library(${target} ${lib_type})
-  set_target_properties(${target} PROPERTIES
-    OUTPUT_NAME ${CMAKE_PROJECT_NAME})
+  set_target_properties(${target} PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME})
   target_include_directories(${target}
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
   target_sources(${target}
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/pmalloc.c")
-  if(PMALLOC_REENTRANT)
+    PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/pmalloc.c"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/arch/${arch}.c")
+  if(PMALLOC_THREADS)
     target_link_libraries(${target} PUBLIC Threads::Threads)
   endif()
 

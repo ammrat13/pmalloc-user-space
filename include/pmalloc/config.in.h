@@ -17,19 +17,19 @@
 #define PMALLOC_CONFIG_H_
 
 /** \brief Defined if the target platform is Unix-like, including `APPLE` */
-#cmakedefine PMALLOC_UNIX
+#cmakedefine PMALLOC_LINUX
 /** \brief Defined if the target platform is Windows */
 #cmakedefine PMALLOC_WIN32
 
 /** \brief Defined if the functions should be thread-safe */
-#cmakedefine PMALLOC_REENTRANT
+#cmakedefine PMALLOC_THREADS
 
-#ifdef PMALLOC_REENTRANT
+#ifdef PMALLOC_THREADS
     /** \brief Defined if the thread library found was `pthreads` */
-#   cmakedefine PMALLOC_REENTRANT_PTHREADS
+#   cmakedefine PMALLOC_PTHREADS
     /** \brief Defined if the thread library found was for Windows */
-#   cmakedefine PMALLOC_REENTRANT_WIN32_THREADS
-#endif  // PMALLOC_REENTRANT
+#   cmakedefine PMALLOC_WIN32_THREADS
+#endif  // PMALLOC_THREADS
 
 /**@}*/
 
