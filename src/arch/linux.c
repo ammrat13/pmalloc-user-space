@@ -53,23 +53,12 @@ void *pmalloc_alloc_page(size_t *length) {
                     // programmatically. Have to use `/proc/meminfo`.
                     FILE *f = fopen("/proc/meminfo", "r");
                     assert(f);
-                    // Get the length of the file
-                    ssize_t flen;
-                    {
-                        int fret = fseek(f, 0l, SEEK_END);
-                        assert(fret == 0);
-                        flen = ftell(f);
-                        assert(flen > 0l);
-                        rewind(f);
-                    }
                     // Read the entire file into RAM
                     char *fdata;
                     {
-                        fdata = malloc(flen + 1);
-                        assert(fdata);
-                        fdata[flen] = 0;
-                        size_t fret = fread(fdata, 1, flen, f);
-                        assert(fret == (size_t) flen);
+                        fdata = calloc(PMALLOC_MEMINFO_MAXSIZE + 1, 1);
+                        fread(fdata, 1, PMALLOC_MEMINFO_MAXSIZE, f);
+                        assert(feof(f));
                     }
                     // Get the start of the line
                     char *find;
@@ -111,13 +100,15 @@ void *pmalloc_alloc_page(size_t *length) {
             page_size == 2097152 ||
             page_size == 1073741824);
         // Round up the length
-        *length = (*length + page_size - 1) / page_size;
+        *length /= page_size;
+        *length *= page_size;
+        *length += page_size;
     #endif
 
     void *ret = mmap(
         NULL, *length,
         PROT_READ | PROT_WRITE,
-        MAP_PRIVATE | MAP_ANONYMOUS | PMALLOC_MMAP_EXTRA_FLAGS,
+        MAP_PRIVATE | MAP_ANONYMOUS | PMALLOC_HUGETLB_FLAGS,
         -1, 0);
     assert(ret != MAP_FAILED);
     return ret;

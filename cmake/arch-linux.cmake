@@ -4,7 +4,7 @@
 include(CMakeDependentOption)
 
 
-set(PMALLOC_MMAP_EXTRA_FLAGS "(0)")
+set(PMALLOC_HUGETLB_FLAGS "(0)")
 
 
 cmake_dependent_option(
@@ -23,7 +23,7 @@ cmake_dependent_option(
 cmake_dependent_option(
   PMALLOC_HUGETLB
   "Use huge pages instead of normal sized pages"
-  ON "PMALLOC_LINUX; PMALLOC_ROUND_PAGESIZE; NOT PMALLOC_PAGESIZE_HARDCODED"
+  OFF "PMALLOC_LINUX; PMALLOC_ROUND_PAGESIZE; NOT PMALLOC_PAGESIZE_HARDCODED"
   OFF
 )
 
@@ -33,10 +33,13 @@ if(PMALLOC_HUGETLB)
   endif()
 
   set(
-    PMALLOC_HUGETLB_MEMINFO "Hugepagesize:"
+    PMALLOC_MEMINFO_HUGEPAGE "Hugepagesize:"
     CACHE STRING "What line to read in /proc/meminfo to find the huge page size")
+  set(
+    PMALLOC_MEMINFO_MAXSIZE 4000
+    CACHE STRING "The maximum size of /proc/meminfo")
 
-  set(PMALLOC_MMAP_EXTRA_FLAGS "(MAP_HUGETLB)")
+  set(PMALLOC_HUGETLB_FLAGS "(MAP_HUGETLB)")
   return()
 endif()
 
@@ -51,9 +54,9 @@ if(PMALLOC_LINUX AND PMALLOC_ROUND_PAGESIZE AND PMALLOC_PAGESIZE_HARDCODED)
   endif()
 
   if(PMALLOC_PAGESIZE EQUAL 2097152)
-    set(PMALLOC_MMAP_EXTRA_FLAGS "(MMAP_HUGE_2MB)")
+    set(PMALLOC_HUGETLB_FLAGS "(MMAP_HUGE_2MB)")
   elseif(PMALLOC_PAGESIZE EQUAL 1073741824)
-    set(PMALLOC_MMAP_EXTRA_FLAGS "(MMAP_HUGE_1GB)")
+    set(PMALLOC_HUGETLB_FLAGS "(MMAP_HUGE_1GB)")
   elseif(NOT PMALLOC_PAGESIZE EQUAL 4096)
     message(FATAL_ERROR "Invalid page size: ${PMALLOC_PAGESIZE}")
   endif()
