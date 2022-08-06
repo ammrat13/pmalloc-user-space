@@ -123,3 +123,52 @@ void pmalloc_markro_page(void *ptr, size_t length) {
     int ret =  mprotect(ptr, length, PROT_READ);
     assert(ret == 0);
 }
+
+
+#if defined(PMALLOC_THREADS)
+#   if defined(PMALLOC_PTHREADS)
+
+void pmalloc_mutex_alloc(pmalloc_mutex_t *mutex) {
+    assert(mutex);
+    int ret;
+
+    #if defined(NDEBUG)
+        ret = pthread_mutex_init(mutex, NULL);
+        assert(ret == 0);
+    #else
+        // If we're building in debug mode, add extra instrumentation to the
+        // mutex to detect errors.
+        pthread_mutexattr_t attr;
+        ret = pthread_mutexattr_init(&attr);
+        assert(ret == 0);
+        ret = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
+        assert(ret == 0);
+        ret = pthread_mutex_init(mutex, &attr);
+        assert(ret == 0);
+        ret = pthread_mutexattr_destroy(&attr);
+        assert(ret == 0);
+    #endif
+}
+
+void pmalloc_mutex_free(pmalloc_mutex_t *mutex) {
+    assert(mutex);
+    int ret = pthread_mutex_destroy(mutex);
+    assert(ret == 0);
+}
+
+void pmalloc_mutex_lock(pmalloc_mutex_t *mutex) {
+    assert(mutex);
+    int ret = pthread_mutex_lock(mutex);
+    assert(ret == 0);
+}
+
+void pmalloc_mutex_unlock(pmalloc_mutex_t *mutex) {
+    assert(mutex);
+    int ret = pthread_mutex_unlock(mutex);
+    assert(ret == 0);
+}
+
+#   else
+#       error "Linux does not support this threading library"
+#   endif
+#endif
