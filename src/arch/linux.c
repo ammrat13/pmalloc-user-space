@@ -128,7 +128,7 @@ void pmalloc_markro_page(void *ptr, size_t length) {
 #if defined(PMALLOC_THREADS)
 #   if defined(PMALLOC_PTHREADS)
 
-void pmalloc_mutex_alloc(pmalloc_mutex_t *mutex) {
+void pmalloc_alloc_mutex(pmalloc_mutex_t *mutex) {
     assert(mutex);
     int ret;
 
@@ -150,19 +150,19 @@ void pmalloc_mutex_alloc(pmalloc_mutex_t *mutex) {
     #endif
 }
 
-void pmalloc_mutex_free(pmalloc_mutex_t *mutex) {
+void pmalloc_free_mutex(pmalloc_mutex_t *mutex) {
     assert(mutex);
     int ret = pthread_mutex_destroy(mutex);
     assert(ret == 0);
 }
 
-void pmalloc_mutex_lock(pmalloc_mutex_t *mutex) {
+void pmalloc_lock_mutex(pmalloc_mutex_t *mutex) {
     assert(mutex);
     int ret = pthread_mutex_lock(mutex);
     assert(ret == 0);
 }
 
-void pmalloc_mutex_unlock(pmalloc_mutex_t *mutex) {
+void pmalloc_unlock_mutex(pmalloc_mutex_t *mutex) {
     assert(mutex);
     int ret = pthread_mutex_unlock(mutex);
     assert(ret == 0);

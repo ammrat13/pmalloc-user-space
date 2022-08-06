@@ -52,7 +52,7 @@ typedef struct pmalloc_pool_t pmalloc_pool_t;
  * areas of memory. Each page has the same permissions --- either read and write
  * or read only. In other words, write permissions are issued on a page
  * granularity. As far as `pmalloc` is concerned, these pages can span multiple
- * OS pages. They'll all have the same permissions.
+ * OS pages or be less than one OS page. They'll all have the same permissions.
  *
  * Objects are created in pages using a simple bump allocator. Importantly, when
  * a page runs out of space, a new page is allocated for the object and the
@@ -65,9 +65,8 @@ typedef struct pmalloc_pool_t pmalloc_pool_t;
  * in those old pages is wasted. Again, `page_size` should be chosen to minimize
  * this effect.
  *
- * \param page_size Write permission granularity in bytes, to be rounded up to
- *                  the nearest OS page
- * \return Opaque handle of the pool created
+ * \param page_size Write permission granularity in bytes. Must be at least `1`
+ * \return Opaque handle of the pool created, or `NULL` if `page_size` was `0`
  *
  * \sa pmalloc_destroy_pool()
  */

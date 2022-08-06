@@ -46,8 +46,8 @@ typedef struct pmalloc_page_header_t pmalloc_page_header_t;
  * more data than we need. Thus, we store the actual size of the page here.
  */
 struct pmalloc_page_header_t {
-    pmalloc_page_header_t *const next;  ///< Next page in the linked list
-    const size_t size;  ///< The size of this page in bytes
+    pmalloc_page_header_t *next;  ///< Next page in the linked list
+    size_t size;  ///< The size of this page in bytes
 
     /** \brief "Boundary pointer"'s offset from the start of the page
      *
@@ -73,7 +73,7 @@ struct pmalloc_page_header_t {
  */
 struct pmalloc_pool_t {
     pmalloc_page_header_t *head;  ///< First page in the linked list
-    const size_t page_size;  ///< How much to allocate at once in bytes
+    size_t page_size;  ///< How much to allocate at once in bytes
 
 #if defined(PMALLOC_THREADS) || defined(DOXYGEN)
     /** \brief Mutual exclusion on the pool

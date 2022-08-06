@@ -95,13 +95,13 @@ void pmalloc_markro_page(void *ptr, size_t length);
 #endif
 
 /** \brief Initialize a mutex for use */
-void pmalloc_mutex_alloc(pmalloc_mutex_t *mutex);
+void pmalloc_alloc_mutex(pmalloc_mutex_t *mutex);
 /** \brief Destroy a mutex after use */
-void pmalloc_mutex_free(pmalloc_mutex_t *mutex);
+void pmalloc_free_mutex(pmalloc_mutex_t *mutex);
 /** \brief Acquire a mutex */
-void pmalloc_mutex_lock(pmalloc_mutex_t *mutex);
+void pmalloc_lock_mutex(pmalloc_mutex_t *mutex);
 /** \brief Release a mutex */
-void pmalloc_mutex_unlock(pmalloc_mutex_t *mutex);
+void pmalloc_unlock_mutex(pmalloc_mutex_t *mutex);
 
 /**@}*/
 
