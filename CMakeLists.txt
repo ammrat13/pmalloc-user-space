@@ -12,7 +12,7 @@ option(BUILD_STATIC_LIBS "Build static libraries" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_C_EXTENSIONS ON)
 
 # The directory for CMake configurations isn't set by default
 set(INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/pmalloc/cmake/")
@@ -116,5 +116,5 @@ configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake"
   INSTALL_DESTINATION "${INSTALL_CONFIGDIR}"
   PATH_VARS INSTALL_CONFIGDIR)
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/pmalloc-config.cmake"
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake"
   DESTINATION "${INSTALL_CONFIGDIR}")

@@ -27,6 +27,10 @@
  * These functions should never return `NULL` if they fail. Instead, they should
  * abort the program.
  *
+ * On Linux, these functions return `MAP_PRIVATE` memory in accordance with
+ * `malloc`. This means pools cannot be shared between multiple processes, only
+ * multiple threads.
+ *
  * \sa pmalloc_pool_t
  *
  * @{
@@ -39,11 +43,14 @@ void pmalloc_free_pool(void *ptr);
 
 /**@}*/
 
-/** \defgroup page Paging Functions
- *  \brief Platform specific code to manage pages
+/** \defgroup page Paging Functions \brief Platform specific code to manage
+ *  pages
  *
  * These functions should never return `NULL` if they fail. Instead, they should
  * abort the program.
+ *
+ * On Linux, these functions return `MAP_PRIVATE` memory. This means pools
+ * cannot be shared between multiple processes, only multiple threads.
  *
  * @{
  */
