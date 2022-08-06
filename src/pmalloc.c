@@ -10,7 +10,7 @@ pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size) {
     // Error checking the arguments. The page size cannot be zero - it just
     // doesn't make sense.
     assert(page_size != 0);
-    if(page_size == 0) {
+    if (page_size == 0) {
         return NULL;
     }
     // Allocate and return
@@ -27,7 +27,7 @@ void pmalloc_destroy_pool(pmalloc_pool_t *pool) {
     // Error checking the arguments. Behave like `free` and don't do anything if
     // passed a `NULL` pool.
     assert(pool);
-    if(pool == NULL) {
+    if (pool == NULL) {
         return;
     }
     // We don't have to lock here. It's undefined behavior to have a race with
@@ -53,7 +53,7 @@ void pmalloc_protect_pool(pmalloc_pool_t *pool) {
     // Error checking the arguments. Don't do anything if the argument is
     // `NULL`.
     assert(pool);
-    if(pool == NULL) {
+    if (pool == NULL) {
         return;
     }
     // Lock
