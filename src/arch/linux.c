@@ -54,7 +54,7 @@ void *pmalloc_alloc_page(size_t *size) {
             if (huge_page_size == 0) {
                 // Doesn't seem to be a way to get huge page size
                 // programmatically. Have to use `/proc/meminfo`.
-                FILE *f = fopen("/proc/meminfo", "r");
+                FILE *f = fopen(PMALLOC_PROC_MOUNT "/meminfo", "r");
                 assert(f);
                 // Read the entire file into RAM
                 char *fdata;
@@ -66,11 +66,11 @@ void *pmalloc_alloc_page(size_t *size) {
                 // Get the start of the line
                 char *find;
                 {
-                    find = strstr(fdata, "Hugepagesize:");
+                    find = strstr(fdata, PMALLOC_MEMINFO_HUGEPAGE);
                     assert(find);
                 }
                 // Increment to the data
-                find += strlen("Hugepagesize:");
+                find += strlen(PMALLOC_MEMINFO_HUGEPAGE);
                 while (*find == ' ')
                     find++;
                 // Set a null terminator at the next space

@@ -24,6 +24,9 @@ if(PMALLOC_HUGETLB)
   endif()
 
   set(
+    PMALLOC_PROC_MOUNT "/proc/"
+    CACHE PATH "Where procfs is mounted")
+  set(
     PMALLOC_MEMINFO_HUGEPAGE "Hugepagesize:"
     CACHE STRING "What line to read in /proc/meminfo to find the huge page size")
   set(

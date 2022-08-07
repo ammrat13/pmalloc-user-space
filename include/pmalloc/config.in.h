@@ -45,6 +45,8 @@
 #   cmakedefine PMALLOC_ROUND_PAGESIZE
     /** \brief Use huge pages */
 #   cmakedefine PMALLOC_HUGETLB
+    /** \brief Where procfs is mounted */
+#   cmakedefine PMALLOC_PROC_MOUNT "@PMALLOC_PROC_MOUNT@"
     /** \brief What line to read in /proc/meminfo to find the page size */
 #   cmakedefine PMALLOC_MEMINFO_HUGEPAGE "@PMALLOC_MEMINFO_HUGEPAGE@"
     /** \brief The largest size of /proc/meminfo we can deal with */
