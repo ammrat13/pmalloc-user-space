@@ -6,16 +6,17 @@
 #include "pmalloc/pmalloc.h"
 #include "pmalloc/internals.h"
 
-#if defined(PMALLOC_LINUX)
-#   include <unistd.h>
+#if defined(PMALLOC_LINUX) || defined(PMALLOC_WIN32)
+#   include <stdlib.h>
 #   include <signal.h>
     void segv_handler(int signal) {
-        _exit(0);
+        assert(signal == SIGSEGV);
+        exit(0);
     }
 #endif
 
 int main(void) {
-    #if defined(PMALLOC_LINUX)
+    #if defined(PMALLOC_LINUX) || defined(PMALLOC_WIN32)
         signal(SIGSEGV, segv_handler);
     #endif
 
