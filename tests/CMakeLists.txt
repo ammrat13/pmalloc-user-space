@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
+
+# Function to add a "simple" test. That is, a test which is just a single file
+# and just links with `pmalloc`.
+function(add_simple_test test_dir test_name)
+
+  # If we're given an argument, the first one is the long name of the test.
+  if(ARGC GREATER_EQUAL 3)
+    list(GET ARGV 2 test_long_name)
+  else()
+    set(test_long_name "${test_name}")
+  endif()
+
+  # Substitute hyphens into the test directory for uniqueness. Use this to
+  # compute the test target
+  string(REPLACE "/" "-" test_dir_hyphen "${test_dir}")
+  set(test_target "test-${test_dir_hyphen}_${test_name}")
+
+  # Actually make the test.
+  add_executable("${test_target}" "${test_dir}/${test_name}.c")
+  target_link_libraries("${test_target}" pmalloc)
+  add_test(NAME "${test_long_name}" COMMAND "${test_target}")
+
+  # If we're given properties, set them
+  if(ARGC GREATER_EQUAL 4)
+    list(SUBLIST ARGV 3 -1 test_props)
+    set_property("${test_long_name}" ${test_props})
+  endif()
+endfunction()
+
+
+add_simple_test("simple" "create-and-destroy-pool" "Create and destroy pool")

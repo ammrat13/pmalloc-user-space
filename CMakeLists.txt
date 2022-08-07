@@ -7,21 +7,22 @@ project(pmalloc LANGUAGES C)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(CTest)
 
 option(BUILD_STATIC_LIBS "Build static libraries" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_TESTS "Build tests" OFF)
 
 option(PMALLOC_MULTIPAGE_ALLOC "Allow allocations larger than one page" ON)
 set(PMALLOC_DEFAULT_PAGESIZE 4096 CACHE STRING "Default size of pool pages")
 set(PMALLOC_DEFAULT_ALIGNMENT 3 CACHE STRING "Default alignment of objects")
 
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_EXTENSIONS ON)
-
-# The directory for CMake configurations isn't set by default
 set(
   PMALLOC_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/pmalloc/cmake/"
   CACHE PATH "Where to install the CMake configuration of this package")
+
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_EXTENSIONS ON)
 
 
 # Figure out what platform we're on and set variables accordingly. Die if we
@@ -125,3 +126,8 @@ configure_package_config_file(
   INSTALL_DESTINATION "${PMALLOC_INSTALL_CONFIGDIR}")
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake"
   DESTINATION "${PMALLOC_INSTALL_CONFIGDIR}")
+
+
+if(BUILD_TESTS)
+  add_subdirectory(tests/)
+endif()
