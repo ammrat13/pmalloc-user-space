@@ -10,7 +10,7 @@ include(CMakePackageConfigHelpers)
 include(CTest)
 
 option(BUILD_STATIC_LIBS "Build static libraries" ON)
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(BUILD_TESTS "Build tests" OFF)
 
 option(PMALLOC_MULTIPAGE_ALLOC "Allow allocations larger than one page" ON)
@@ -117,7 +117,8 @@ foreach(cfg static shared)
     NAMESPACE pmalloc::)
 endforeach()
 
-# Alias the targets for ease of use. Also check that something was built.
+# Alias the targets for ease of use. Prefer the static library when using CMake.
+# Also check that something was built.
 if(BUILD_STATIC_LIBS)
   add_library(pmalloc ALIAS pmalloc-static)
 elseif(BUILD_SHARED_LIBS)
