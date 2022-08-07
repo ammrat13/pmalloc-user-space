@@ -39,38 +39,38 @@ endfunction()
 add_simple_test(
   "simple" "create-destroy"
   "Create and destroy pool"
-  LABELS "Simple")
+  LABELS "Simple\\\;Memcheck")
 add_simple_test(
   "simple" "create-protect-destroy"
   "Create, protect, then destroy pool"
-  LABELS "Simple")
+  LABELS "Simple\\\;Memcheck")
 
 add_simple_test(
   "alloc" "simple"
   "Allocate data from pool"
-  LABELS "Allocation")
+  LABELS "Allocation\\\;Memcheck")
 add_simple_test(
   "alloc" "alignment"
   "Allocate data with alignment"
-  LABELS "Allocation")
+  LABELS "Allocation\\\;Memcheck")
 add_simple_test(
   "alloc" "multipage"
   "Allocate in multiple pages"
-  LABELS "Allocation")
+  LABELS "Allocation\\\;Memcheck")
 
 add_simple_test(
   "protect" "simple"
   "Protect data inside pool"
-  LABELS "Protection")
+  LABELS "Protection\\\;Memcheck")
 add_simple_test(
   "protect" "write"
   "Fail to write protected data"
-  LABELS "Protection")
+  WILL_FAIL TRUE LABELS "Protection")
 add_simple_test(
   "protect/multiple-alloc" "read-ro"
   "Allocate and protect multiple times"
-  LABELS "Protection")
+  LABELS "Protection\\\;Memcheck")
 add_simple_test(
   "protect/multiple-alloc" "write-ro"
   "Ensure protection work with multiple"
-  LABELS "Protection")
+  WILL_FAIL TRUE LABELS "Protection")
