@@ -35,7 +35,7 @@ endif()
 
 cmake_dependent_option(
   PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS
-  "DEBUG: Assert that the normal page size is 4K and the huge page size if 2M"
+  "DEBUG: Assert that the normal page size is 4K and the huge page size is 2M"
   OFF "PMALLOC_LINUX; PMALLOC_ROUND_PAGESIZE"
   OFF
 )
