@@ -37,7 +37,7 @@
 #cmakedefine PMALLOC_DEFAULT_ALIGNMENT @PMALLOC_DEFAULT_ALIGNMENT@
 
 
-/** \brief Defined if the target platform is Unix-like, including `APPLE` */
+/** \brief Defined if the target platform is Linux (not just UNIX) */
 #cmakedefine PMALLOC_LINUX
 
 #if defined(PMALLOC_LINUX)
