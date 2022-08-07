@@ -56,15 +56,15 @@ void pmalloc_free_pool(void *ptr);
  */
 
 /** \brief Allocate consecutive pages spanning at least `size` bytes
- * \param [inout] length How many consecutive bytes to reserve. Return the
- *                       length actually allocated.
+ * \param [inout] size How many consecutive bytes to reserve. Return the
+ *                     size actually allocated.
  * \return Pointer to the start of the memory region allocated
  */
-void *pmalloc_alloc_page(size_t *length);
-/** \brief Free the pages from `ptr` to `ptr+length-1` */
-void pmalloc_free_page(void *ptr, size_t length);
-/** \brief Mark the pages from `ptr` to `ptr+length-1` as readonly */
-void pmalloc_markro_page(void *ptr, size_t length);
+void *pmalloc_alloc_page(size_t *size);
+/** \brief Free the pages from `ptr` to `ptr+size-1` */
+void pmalloc_free_page(void *ptr, size_t size);
+/** \brief Mark the pages from `ptr` to `ptr+size-1` as readonly */
+void pmalloc_markro_page(void *ptr, size_t size);
 
 /**@}*/
 

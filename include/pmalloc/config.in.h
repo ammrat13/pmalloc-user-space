@@ -16,6 +16,17 @@
 #ifndef PMALLOC_CONFIG_H_
 #define PMALLOC_CONFIG_H_
 
+
+/** \brief Allow the user to allocate in chunks bigger than a page
+ *
+ * If this option is set and the user requests a chunk of memory larger than the
+ * set page size, the allocation will succeed and the new chunk will be placed
+ * in its own page, possibly rounded up. If this option is unset, the allocation
+ * will fail.
+ */
+#cmakedefine PMALLOC_MULTIPAGE_ALLOC
+
+
 /** \brief Defined if the target platform is Unix-like, including `APPLE` */
 #cmakedefine PMALLOC_LINUX
 

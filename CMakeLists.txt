@@ -10,6 +10,7 @@ include(CMakePackageConfigHelpers)
 
 option(BUILD_STATIC_LIBS "Build static libraries" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(PMALLOC_MULTIPAGE_ALLOC "Allow allocations larger than one page" ON)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_EXTENSIONS ON)

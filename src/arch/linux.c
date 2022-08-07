@@ -34,10 +34,10 @@ void pmalloc_free_pool(void *ptr) {
 }
 
 
-void *pmalloc_alloc_page(size_t *length) {
-    assert(length);
+void *pmalloc_alloc_page(size_t *size) {
+    assert(size);
 
-    // If we have to round, do so here. The result is stored in `*length` for
+    // If we have to round, do so here. The result is stored in `*size` for
     // integration with the code later.
     #if defined(PMALLOC_ROUND_PAGESIZE)
         // The page size we'll use for rounding. Try to compute statically, and
@@ -100,13 +100,11 @@ void *pmalloc_alloc_page(size_t *length) {
             page_size == 2097152 ||
             page_size == 1073741824);
         // Round up the length
-        *length /= page_size;
-        *length *= page_size;
-        *length += page_size;
+        *size = pmalloc_round_up(*size, page_size);
     #endif
 
     void *ret = mmap(
-        NULL, *length,
+        NULL, *size,
         PROT_READ | PROT_WRITE,
         MAP_PRIVATE | MAP_ANONYMOUS | PMALLOC_HUGETLB_FLAGS,
         -1, 0);
@@ -114,13 +112,13 @@ void *pmalloc_alloc_page(size_t *length) {
     return ret;
 }
 
-void pmalloc_free_page(void *ptr, size_t length) {
-    int ret = munmap(ptr, length);
+void pmalloc_free_page(void *ptr, size_t size) {
+    int ret = munmap(ptr, size);
     assert(ret == 0);
 }
 
-void pmalloc_markro_page(void *ptr, size_t length) {
-    int ret =  mprotect(ptr, length, PROT_READ);
+void pmalloc_markro_page(void *ptr, size_t size) {
+    int ret =  mprotect(ptr, size, PROT_READ);
     assert(ret == 0);
 }
 

@@ -47,7 +47,7 @@ typedef struct pmalloc_page_header_t pmalloc_page_header_t;
  */
 struct pmalloc_page_header_t {
     pmalloc_page_header_t *next;  ///< Next page in the linked list
-    size_t size;  ///< The size of this page in bytes
+    size_t page_size;  ///< The size of this page in bytes
 
     /** \brief "Boundary pointer"'s offset from the start of the page
      *
@@ -87,6 +87,17 @@ struct pmalloc_pool_t {
     pmalloc_mutex_t mutex;
 #endif
 };
+
+
+/** \brief Round down `x` to the nearest multiple of `m` */
+static inline size_t pmalloc_round_down(size_t x, size_t m) {
+    return (x / m) * m;
+}
+
+/** \brief Round up `x` to the nearest multiple of `m` */
+static inline size_t pmalloc_round_up(size_t x, size_t m) {
+    return ((x + m - 1) / m) * m;
+}
 
 /**@}*/
 
