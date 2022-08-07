@@ -36,77 +36,105 @@ void pmalloc_free_pool(void *ptr) {
 
 void *pmalloc_alloc_page(size_t *size) {
     assert(size);
+    void *ret;
 
-    // If we have to round, do so here. The result is stored in `*size` for
-    // integration with the code later.
+    // Get the page sizes if we have to. If we're using huge pages, we might
+    // need to fall back to normal pages.
     #if defined(PMALLOC_ROUND_PAGESIZE)
-        // The page size we'll use for rounding. Try to compute statically, and
-        // failing that, only compute it once.
-        static size_t page_size =
-        #if defined(PMALLOC_PAGESIZE_HARDCODED)
-            PMALLOC_PAGESIZE;
-        #else
-            0;
-            if (page_size == 0) {
-                #if defined(PMALLOC_HUGETLB)
-                    // Doesn't seem to be a way to get huge page size
-                    // programmatically. Have to use `/proc/meminfo`.
-                    FILE *f = fopen("/proc/meminfo", "r");
-                    assert(f);
-                    // Read the entire file into RAM
-                    char *fdata;
-                    {
-                        fdata = calloc(PMALLOC_MEMINFO_MAXSIZE + 1, 1);
-                        fread(fdata, 1, PMALLOC_MEMINFO_MAXSIZE, f);
-                        assert(feof(f));
+        static size_t page_size = 0;
+        if (page_size == 0) {
+            long sysconf_ret = sysconf(_SC_PAGE_SIZE);
+            assert(sysconf_ret != -1l);
+            page_size = sysconf(_SC_PAGE_SIZE);
+            assert(page_size != 0);
+            #if defined(PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS)
+                assert(page_size == 4096);
+            #endif
+        }
+    #   if defined(PMALLOC_HUGETLB)
+            static size_t huge_page_size = 0;
+            if (huge_page_size == 0) {
+                // Doesn't seem to be a way to get huge page size
+                // programmatically. Have to use `/proc/meminfo`.
+                FILE *f = fopen("/proc/meminfo", "r");
+                assert(f);
+                // Read the entire file into RAM
+                char *fdata;
+                {
+                    fdata = calloc(PMALLOC_MEMINFO_MAXSIZE + 1, 1);
+                    fread(fdata, 1, PMALLOC_MEMINFO_MAXSIZE, f);
+                    assert(feof(f));
+                }
+                // Get the start of the line
+                char *find;
+                {
+                    find = strstr(fdata, "Hugepagesize:");
+                    assert(find);
+                }
+                // Increment to the data
+                find += strlen("Hugepagesize:");
+                while (*find == ' ')
+                    find++;
+                // Set a null terminator at the next space
+                char *end;
+                {
+                    end = find;
+                    while (*end != ' ') {
+                        assert('0' <= *end && *end <= '9');
+                        end++;
                     }
-                    // Get the start of the line
-                    char *find;
-                    {
-                        find = strstr(fdata, "Hugepagesize:");
-                        assert(find);
-                    }
-                    // Increment to the data
-                    find += strlen("Hugepagesize:");
-                    while (*find == ' ')
-                        find++;
-                    // Set a null terminator at the next space
-                    char *end;
-                    {
-                        end = find;
-                        while (*end != ' ') {
-                            assert('0' <= *end && *end <= '9');
-                            end++;
-                        }
-                        *end = 0;
-                    }
-                    // Assert we have the right units
-                    assert(end[1] == 'k');
-                    assert(end[2] == 'B');
-                    assert(end[3] == '\n');
-                    // Get the size
-                    page_size = atoi(find) * 1024;
-                    // Free the buffer
-                    free(fdata);
-                #else
-                    page_size = sysconf(_SC_PAGE_SIZE);
+                    *end = 0;
+                }
+                // Assert we have the right units
+                assert(end[1] == 'k');
+                assert(end[2] == 'B');
+                assert(end[3] == '\n');
+                // Get the size
+                huge_page_size = atoi(find) * 1024;
+                assert(huge_page_size != 0);
+                assert(huge_page_size > page_size);
+                #if defined(PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS)
+                    assert(huge_page_size == 2097152);
                 #endif
+                // Free the buffer
+                free(fdata);
             }
-        #endif
-        // Sanity checks for page size. This might be a bit too aggressive, but
-        // that's fine.
-        assert(
-            page_size == 4096 ||
-            page_size == 2097152 ||
-            page_size == 1073741824);
-        // Round up the length
-        *size = pmalloc_round_up(*size, page_size);
+    #   endif
     #endif
 
-    void *ret = mmap(
+    // Compute the size to allocate in each page
+    #if defined(PMALLOC_ROUND_PAGESIZE)
+        const size_t size_page = pmalloc_round_up(*size, page_size);
+    #   if defined(PMALLOC_HUGETLB)
+            const size_t size_huge_page =
+                pmalloc_round_up(*size, huge_page_size);
+    #   endif
+    #endif
+
+    // Try HugeTLB
+    #if defined(PMALLOC_HUGETLB)
+        ret = mmap(
+            NULL, size_huge_page,
+            PROT_READ | PROT_WRITE,
+            MAP_PRIVATE | MAP_ANAONYMOUS | MAP_HUGETLB,
+            -1, 0);
+        assert(ret != MAP_FAILED || errno == ENOMEM);
+        // If we succeed, great. If not, carry on.
+        if (ret != MAP_FAILED) {
+            *size = size_huge_page;
+            return ret;
+        }
+    #endif
+
+    // Round up the page size if needed
+    #if defined(PMALLOC_ROUND_PAGESIZE)
+        *size = size_page;
+    #endif
+    // Do the allocation
+    ret = mmap(
         NULL, *size,
         PROT_READ | PROT_WRITE,
-        MAP_PRIVATE | MAP_ANONYMOUS | PMALLOC_HUGETLB_FLAGS,
+        MAP_PRIVATE | MAP_ANONYMOUS,
         -1, 0);
     assert(ret != MAP_FAILED);
     return ret;

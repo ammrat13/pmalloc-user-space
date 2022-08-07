@@ -14,7 +14,7 @@ pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size) {
         return NULL;
     }
     // Allocate and return
-    pmalloc_pool_t *ret = pmalloc_alloc_pool();
+    pmalloc_pool_t *const ret = pmalloc_alloc_pool();
     ret->head = NULL;
     ret->page_size = page_size;
     #if defined(PMALLOC_THREADS)
@@ -95,7 +95,7 @@ void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align) {
     // Compute how much space is needed for allocation. Check to see if we need
     // to allocate a new page.
     bool need_new_page = false;
-    size_t min_page_size =
+    const size_t min_page_size =
         pmalloc_round_up(sizeof(pmalloc_page_header_t), 1 << align) +
         size;
     if (pool->page_size < min_page_size) {
@@ -122,11 +122,12 @@ void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align) {
                 pool->page_size;
             #endif
         // Allocate the new page
-        pmalloc_page_header_t *new_page = pmalloc_alloc_page(&new_page_size);
+        pmalloc_page_header_t *const new_page =
+            pmalloc_alloc_page(&new_page_size);
         assert(new_page_size >= pool->page_size);
         assert(new_page_size >= min_page_size);
         // Set up the fields
-        size_t new_page_bp =
+        const size_t new_page_bp =
             pmalloc_round_down(new_page_size - size, 1 << align);
         assert(new_page_bp >= sizeof(pmalloc_page_header_t));
         assert(new_page_bp % (1 << align) == 0);

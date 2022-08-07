@@ -31,26 +31,17 @@
 #cmakedefine PMALLOC_LINUX
 
 #if defined(PMALLOC_LINUX)
-
-    /** \brief Extra arguments to pass to `mmap` to get the right page size */
-#   cmakedefine PMALLOC_HUGETLB_FLAGS @PMALLOC_HUGETLB_FLAGS@
-
     /** \brief Round the page size up to the nearest physical page */
 #   cmakedefine PMALLOC_ROUND_PAGESIZE
-    /** \brief Use a hard-coded user-supplied page size */
-#   cmakedefine PMALLOC_PAGESIZE_HARDCODED
+    /** \brief Use huge pages */
+#   cmakedefine PMALLOC_HUGETLB
+    /** \brief What line to read in /proc/meminfo to find the page size */
+#   cmakedefine PMALLOC_MEMINFO_HUGEPAGE "@PMALLOC_MEMINFO_HUGEPAGE@"
+    /** \brief The largest size of /proc/meminfo we can deal with */
+#   cmakedefine PMALLOC_MEMINFO_MAXSIZE @PMALLOC_MEMINFO_MAXSIZE@
 
-#   if !defined(PMALLOC_PAGESIZE_HARDCODED)
-        /** \brief Use huge pages */
-#       cmakedefine PMALLOC_HUGETLB
-        /** \brief What line to read in /proc/meminfo to find the page size */
-#       cmakedefine PMALLOC_MEMINFO_HUGEPAGE "@PMALLOC_MEMINFO_HUGEPAGE@"
-        /** \brief The largest size of /proc/meminfo we can deal with */
-#       cmakedefine PMALLOC_MEMINFO_MAXSIZE @PMALLOC_MEMINFO_MAXSIZE@
-#   else
-        /** \brief The hard-coded size of physical pages */
-#       cmakedefine PMALLOC_PAGESIZE @PMALLOC_PAGESIZE@
-#   endif
+    /** \brief Assert that page sizes are exactly their "normal" values */
+#   cmakedefine PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS
 #endif
 
 
