@@ -63,8 +63,6 @@
 #if defined(PMALLOC_WIN32)
     /** \brief Round the page size up to the nearest physical page */
 #   cmakedefine PMALLOC_ROUND_PAGESIZE
-    /** \brief Use large pages */
-#   cmakedefine PMALLOC_LARGEPAGES
 
     /** \brief Assert that page sizes are exactly their "normal" values */
 #   cmakedefine PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS

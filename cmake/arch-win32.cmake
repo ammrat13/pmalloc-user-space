@@ -10,13 +10,6 @@ cmake_dependent_option(
   ON "PMALLOC_WIN32"
   OFF)
 
-cmake_dependent_option(
-  PMALLOC_LARGEPAGES
-  "Try to use large pages if possible, falling back to normal pages otherwise"
-  OFF "PMALLOC_WIN32; PMALLOC_ROUND_PAGESIZE"
-  OFF
-)
-
 
 cmake_dependent_option(
   PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS

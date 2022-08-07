@@ -47,34 +47,18 @@ void* pmalloc_alloc_page(size_t* size) {
                 assert(page_size == 4096);
             #endif
         }
-    #   if defined(PMALLOC_LARGEPAGES)
-            // If this value is zero, then large pages are unsupported.
-            static size_t largepage_size = 0;
-            if (largepage_size == 0) {
-                largepage_size = GetLargePageMinimum();
-                #if defined(PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS)
-                    assert(largepage_size == 0 || largepage_size == 2097152);
-                #endif
-            }
-    #   endif
     #endif
 
-    // Compute size and flags for allocation.
-    DWORD allocType = MEM_COMMIT | MEM_RESERVE;
+    // Compute size
     #if defined(PMALLOC_ROUND_PAGESIZE)
-    #   if defined(PMALLOC_LARGEPAGES)
-            if(largepage_size != 0) {
-                *size = pmalloc_round_up(*size, largepage_size);
-                allocType |= MEM_LARGE_PAGES;
-            } else
-    #   endif
-        {
-            *size = pmalloc_round_up(*size, page_size);
-        }
+        *size = pmalloc_round_up(*size, page_size);
     #endif
 
     // Allocate
-    LPVOID ret = VirtualAlloc(NULL, *size, allocType, PAGE_READWRITE);
+    LPVOID ret = VirtualAlloc(
+        NULL, *size,
+        MEM_COMMIT | MEM_RESERVE,
+        PAGE_READWRITE);
     assert(ret);
     return ret;
 }
