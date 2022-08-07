@@ -56,9 +56,13 @@ endfunction()
 
 
 add_simple_test(
-  "simple" "create-and-destroy-pool"
+  "simple" "create-destroy"
   "Create and destroy pool"
   VALGRIND TRUE)
+add_simple_test(
+    "simple" "create-protect-destroy"
+    "Create, protect, then destroy pool"
+    VALGRIND TRUE)
 
 add_simple_test(
   "alloc" "simple"
@@ -68,7 +72,7 @@ add_simple_test(
   "alloc" "alignment"
   "Allocate data with alignment"
   VALGRIND TRUE)
-  add_simple_test(
-    "alloc" "multipage"
-    "Allocate in multiple pages"
-    VALGRIND TRUE)
+add_simple_test(
+  "alloc" "multipage"
+  "Allocate in multiple pages"
+  VALGRIND TRUE)
