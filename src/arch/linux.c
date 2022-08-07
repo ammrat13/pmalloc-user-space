@@ -94,8 +94,9 @@ void *pmalloc_alloc_page(size_t *size) {
                 #if defined(PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS)
                     assert(huge_page_size == 2097152);
                 #endif
-                // Free the buffer
+                // Free everything
                 free(fdata);
+                fclose(f);
             }
     #   endif
     #endif

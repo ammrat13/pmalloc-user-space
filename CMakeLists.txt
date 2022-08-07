@@ -11,7 +11,6 @@ include(CTest)
 
 option(BUILD_STATIC_LIBS "Build static libraries" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
-option(BUILD_TESTS "Build tests" OFF)
 
 option(PMALLOC_MULTIPAGE_ALLOC "Allow allocations larger than one page" ON)
 set(PMALLOC_DEFAULT_PAGESIZE 4096 CACHE STRING "Default size of pool pages")
@@ -138,6 +137,6 @@ install(FILES "${CMAKE_SOURCE_DIR}/cmake/pmalloc-config.cmake"
   DESTINATION "${PMALLOC_INSTALL_CONFIGDIR}")
 
 
-if(BUILD_TESTS)
+if(BUILD_TESTING)
   add_subdirectory(tests/)
 endif()

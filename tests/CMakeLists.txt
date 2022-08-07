@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
 
-option(PMALLOC_TESTS_VALGRIND "Use valgrind when running some tests" ON)
-
 
 # Function to add a "simple" test. That is, a test which is just a single file
 # and just links with `pmalloc`.
@@ -13,23 +11,6 @@ function(add_simple_test test_dir test_name)
     list(GET ARGV 2 test_long_name)
   else()
     set(test_long_name "${test_name}")
-  endif()
-
-  # Get any properties we're given
-  if(ARGC GREATER_EQUAL 4)
-    list(SUBLIST ARGV 3 -1 test_props)
-  endif()
-
-  # Check for valgrind
-  set(valgrind OFF)
-  list(FIND test_props "VALGRIND" valgrind_sig_idx)
-  if(NOT valgrind_sig_idx EQUAL -1)
-    math(EXPR valgrind_opt_idx "${valgrind_sig_idx} + 1" OUTPUT_FORMAT DECIMAL)
-    list(GET test_props ${valgrind_opt_idx} valgrind_opt)
-    if(valgrind_opt STREQUAL "TRUE")
-      set(valgrind ON)
-    endif()
-    list(REMOVE_AT test_props ${valgrind_sig_idx} ${valgrind_opt_idx})
   endif()
 
   # Substitute hyphens into the test directory for uniqueness. Use this to
@@ -48,8 +29,8 @@ function(add_simple_test test_dir test_name)
   endif()
 
   # Set any given properties
-  list(LENGTH test_props test_props_len)
-  if(test_props_len GREATER_EQUAL 1)
+  if(ARGC GREATER_EQUAL 4)
+    list(SUBLIST ARGV 3 -1 test_props)
     set_property(TEST "${test_long_name}" PROPERTY ${test_props})
   endif()
 endfunction()
@@ -58,21 +39,30 @@ endfunction()
 add_simple_test(
   "simple" "create-destroy"
   "Create and destroy pool"
-  VALGRIND TRUE)
+  LABEL "Simple")
 add_simple_test(
-    "simple" "create-protect-destroy"
-    "Create, protect, then destroy pool"
-    VALGRIND TRUE)
+  "simple" "create-protect-destroy"
+  "Create, protect, then destroy pool"
+  LABEL "Simple")
 
 add_simple_test(
   "alloc" "simple"
   "Allocate data from pool"
-  VALGRIND TRUE)
+  LABEL "Allocation")
 add_simple_test(
   "alloc" "alignment"
   "Allocate data with alignment"
-  VALGRIND TRUE)
+  LABEL "Allocation")
 add_simple_test(
   "alloc" "multipage"
   "Allocate in multiple pages"
-  VALGRIND TRUE)
+  LABEL "Allocation")
+
+add_simple_test(
+  "protect" "simple"
+  "Protect data inside pool"
+  LABEL "Protection")
+add_simple_test(
+  "protect" "write"
+  "Fail to write protected data"
+  LABEL "Protection" WILL_FAIL TRUE)

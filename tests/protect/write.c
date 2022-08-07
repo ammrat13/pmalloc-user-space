@@ -9,11 +9,10 @@
 
 int main(void) {
     pmalloc_pool_t *pool = pmalloc_create_pool();
-    pmalloc_align(pool, 7, 4);
+    char *x = pmalloc(pool, 1);
 
-    assert(pool->head);
-    assert(pool->head->bp_offset == PMALLOC_DEFAULT_PAGESIZE - 16);
+    pmalloc_protect_pool(pool);
+    *x = 'A';
 
-    pmalloc_destroy_pool(pool);
     return 0;
 }

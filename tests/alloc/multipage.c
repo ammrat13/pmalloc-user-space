@@ -2,7 +2,6 @@
 // Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
 
 #include <assert.h>
-#include <stdint.h>
 
 #include "pmalloc/pmalloc.h"
 #include "pmalloc/internals.h"
