@@ -92,7 +92,6 @@ void pmalloc_markro_page(void *ptr, size_t size);
 #   elif defined(PMALLOC_WIN32_THREADS)
 #       error "Windows is not currently supported"
 #   endif
-#endif
 
 /** \brief Initialize a mutex for use */
 void pmalloc_alloc_mutex(pmalloc_mutex_t *mutex);
@@ -102,6 +101,8 @@ void pmalloc_free_mutex(pmalloc_mutex_t *mutex);
 void pmalloc_lock_mutex(pmalloc_mutex_t *mutex);
 /** \brief Release a mutex */
 void pmalloc_unlock_mutex(pmalloc_mutex_t *mutex);
+
+#endif
 
 /**@}*/
 
