@@ -1,7 +1,10 @@
 # Build output
 build/
+install/
 doc/
+out/
 
 # IDE files
 .vscode/
 .vs/
+CMakeSettings.json
