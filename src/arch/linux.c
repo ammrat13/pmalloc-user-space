@@ -8,12 +8,10 @@
 
 #include "pmalloc/internals.h"
 
-#if \
-    defined(PMALLOC_ROUND_PAGESIZE) && \
-    !defined(PMALLOC_PAGESIZE_HARDCODED) && \
-    defined(PMALLOC_HUGETLB)
+#if defined(PMALLOC_ROUND_PAGESIZE) && defined(PMALLOC_HUGETLB)
 #   include <stdio.h>
 #   include <string.h>
+#   include <errno.h>
 #endif
 
 // This file should only be compiled on Linux.
@@ -116,7 +114,7 @@ void *pmalloc_alloc_page(size_t *size) {
         ret = mmap(
             NULL, size_huge_page,
             PROT_READ | PROT_WRITE,
-            MAP_PRIVATE | MAP_ANAONYMOUS | MAP_HUGETLB,
+            MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB,
             -1, 0);
         assert(ret != MAP_FAILED || errno == ENOMEM);
         // If we succeed, great. If not, carry on.
