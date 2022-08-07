@@ -90,7 +90,7 @@ void pmalloc_markro_page(void *ptr, size_t size);
         typedef pthread_mutex_t pmalloc_mutex_t;
 
 #   elif defined(PMALLOC_WIN32_THREADS)
-#       error "Windows is not currently supported"
+#       error "Windows threading is not currently supported"
 #   endif
 
 /** \brief Initialize a mutex for use */

@@ -34,6 +34,7 @@ void pmalloc_free_pool(void *ptr) {
 
 void *pmalloc_alloc_page(size_t *size) {
     assert(size);
+    assert(*size > 0);
     void *ret;
 
     // Get the page sizes if we have to. If we're using huge pages, we might
@@ -140,11 +141,15 @@ void *pmalloc_alloc_page(size_t *size) {
 }
 
 void pmalloc_free_page(void *ptr, size_t size) {
+    assert(ptr);
+    assert(size > 0);
     int ret = munmap(ptr, size);
     assert(ret == 0);
 }
 
 void pmalloc_markro_page(void *ptr, size_t size) {
+    assert(ptr);
+    assert(size > 0);
     int ret =  mprotect(ptr, size, PROT_READ);
     assert(ret == 0);
 }

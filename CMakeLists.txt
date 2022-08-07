@@ -78,7 +78,9 @@ foreach(cfg static shared)
   # all the headers as PRIVATE and install later. We do this by a custom file
   # set.
   add_library(${target} ${lib_type})
-  set_target_properties(${target} PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME})
+  set_target_properties(${target} PROPERTIES
+    OUTPUT_NAME ${CMAKE_PROJECT_NAME}
+    LINKER_LANGUAGE C)
   target_include_directories(${target}
     PRIVATE "${CMAKE_SOURCE_DIR}/include/")
   target_sources(${target}

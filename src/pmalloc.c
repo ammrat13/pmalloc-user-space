@@ -97,7 +97,7 @@ void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align) {
     // to allocate a new page.
     bool need_new_page = false;
     const size_t min_page_size =
-        pmalloc_round_up(sizeof(pmalloc_page_header_t), 1 << align) +
+        pmalloc_round_up(sizeof(pmalloc_page_header_t), 1ll << align) +
         size;
     if (pool->page_size < min_page_size) {
         #if defined(PMALLOC_MULTIPAGE_ALLOC)
@@ -137,9 +137,9 @@ void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align) {
         assert(new_page_size >= min_page_size);
         // Set up the fields
         const size_t new_page_bp =
-            pmalloc_round_down(new_page_size - size, 1 << align);
+            pmalloc_round_down(new_page_size - size, 1ll << align);
         assert(new_page_bp >= sizeof(pmalloc_page_header_t));
-        assert(new_page_bp % (1 << align) == 0);
+        assert(new_page_bp % (1ll << align) == 0);
         new_page->page_size = new_page_size;
         new_page->bp_offset = new_page_bp;
         new_page->ro = false;
@@ -150,9 +150,9 @@ void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align) {
         ret = (char *) new_page + new_page_bp;
     } else {
         pool->head->bp_offset =
-            pmalloc_round_down(pool->head->bp_offset - size, 1 << align);
+            pmalloc_round_down(pool->head->bp_offset - size, 1ll << align);
         assert(pool->head->bp_offset >= sizeof(pmalloc_page_header_t));
-        assert(pool->head->bp_offset % (1 << align) == 0);
+        assert(pool->head->bp_offset % (1ll << align) == 0);
         ret = (char *) pool->head + pool->head->bp_offset;
     }
 
