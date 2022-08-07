@@ -61,10 +61,11 @@ void pmalloc_protect_pool(pmalloc_pool_t *pool) {
         pmalloc_lock_mutex(&pool->mutex);
     #endif
 
-    // Traverse the linked list, marking all the pages. Make sure we don't write
-    // to a page once it's marked.
+    // Traverse the linked list, marking all the pages. Stop once we see the
+    // first read-only page, as everything after that is read-only. Make sure we
+    // don't write to a page once it's marked.
     pmalloc_page_header_t *cur = pool->head;
-    while (cur != NULL) {
+    while (cur != NULL && !cur->ro) {
         cur->ro = true;
         pmalloc_markro_page(cur, cur->page_size);
         cur = cur->next;
@@ -104,8 +105,13 @@ void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align) {
         #else
             return NULL;
         #endif
-    } else if (pool->head == NULL || pool->head->bp_offset < min_page_size) {
-        need_new_page = true;
+    } else {
+        // If there is no page in the list and this is our first allocation
+        need_new_page |= pool->head == NULL;
+        // If the first page in the list is marked as read-only
+        need_new_page |= pool->head->ro;
+        // If there's not enough space left in the page
+        need_new_page |= pool->head->bp_offset < min_page_size;
     }
 
     // Actually do the allocation
