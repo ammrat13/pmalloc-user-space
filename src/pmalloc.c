@@ -107,11 +107,14 @@ void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align) {
         #endif
     } else {
         // If there is no page in the list and this is our first allocation
-        need_new_page |= pool->head == NULL;
-        // If the first page in the list is marked as read-only
-        need_new_page |= pool->head->ro;
-        // If there's not enough space left in the page
-        need_new_page |= pool->head->bp_offset < min_page_size;
+        if (pool->head == NULL) {
+            need_new_page = true;
+        } else {
+            // If the first page in the list is marked as read-only
+            need_new_page |= pool->head->ro;
+            // If there's not enough space left in the page
+            need_new_page |= pool->head->bp_offset < min_page_size;
+        }
     }
 
     // Actually do the allocation

@@ -59,3 +59,12 @@ add_simple_test(
   "simple" "create-and-destroy-pool"
   "Create and destroy pool"
   VALGRIND TRUE)
+
+add_simple_test(
+  "alloc" "simple"
+  "Allocate data from pool"
+  VALGRIND TRUE)
+add_simple_test(
+  "alloc" "alignment"
+  "Allocate data with alignment"
+  VALGRIND TRUE)
