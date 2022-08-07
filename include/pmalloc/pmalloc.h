@@ -19,6 +19,8 @@
 
 #include <stddef.h>
 
+#include "pmalloc/config.h"
+
 
 /** \brief Opaque handle to a pool managed by `pmalloc`
  *
@@ -72,17 +74,12 @@ typedef struct pmalloc_pool_t pmalloc_pool_t;
  */
 pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size);
 
-/** \brief Page size to use when creating a pool if none is specified
- * \sa pmalloc_create_pool()
- */
-static const size_t PMALLOC_DEFAULT_PAGE_SIZE = 4096;
-
 /** \brief Calls pmalloc_create_custom_pool() with the default page size
  * \sa PMALLOC_DEFAULT_PAGE_SIZE
  * \sa pmalloc_create_custom_pool()
  */
 static inline pmalloc_pool_t *pmalloc_create_pool(void) {
-    return pmalloc_create_custom_pool(PMALLOC_DEFAULT_PAGE_SIZE);
+    return pmalloc_create_custom_pool(PMALLOC_DEFAULT_PAGESIZE);
 }
 
 
@@ -136,11 +133,6 @@ void pmalloc_protect_pool(pmalloc_pool_t *pool);
  * \return Pointer to the allocated memory
  */
 void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align);
-
-/** \brief Alignment to use for allocation when none is specified
- * \sa pmalloc()
- */
-static const size_t PMALLOC_DEFAULT_ALIGNMENT = 0;
 
 /** \brief Calls pmalloc_align() with the supplied arguments and the default
  *         alignment

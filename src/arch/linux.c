@@ -43,10 +43,10 @@ void *pmalloc_alloc_page(size_t *size) {
     #if defined(PMALLOC_ROUND_PAGESIZE)
         static size_t page_size = 0;
         if (page_size == 0) {
-            long sysconf_ret = sysconf(_SC_PAGE_SIZE);
+            const ssize_t sysconf_ret = sysconf(_SC_PAGE_SIZE);
             assert(sysconf_ret != -1l);
-            page_size = sysconf(_SC_PAGE_SIZE);
-            assert(page_size != 0);
+            assert(sysconf_ret != 0l);
+            page_size = sysconf_ret;
             #if defined(PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS)
                 assert(page_size == 4096);
             #endif

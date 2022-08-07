@@ -10,7 +10,10 @@ include(CMakePackageConfigHelpers)
 
 option(BUILD_STATIC_LIBS "Build static libraries" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
 option(PMALLOC_MULTIPAGE_ALLOC "Allow allocations larger than one page" ON)
+set(PMALLOC_DEFAULT_PAGESIZE 4096 CACHE STRING "Default size of pool pages")
+set(PMALLOC_DEFAULT_ALIGNMENT 3 CACHE STRING "Default alignment of objects")
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_EXTENSIONS ON)
@@ -90,7 +93,9 @@ foreach(cfg static shared)
   target_sources(${target}
     PUBLIC FILE_SET HEADERS
     BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/"
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/pmalloc.h")
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/pmalloc.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.h")
 
   # Turn warnings into errors. We shouldn't have any warnings to begin with.
   if(MSVC)

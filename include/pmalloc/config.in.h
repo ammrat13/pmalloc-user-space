@@ -26,6 +26,16 @@
  */
 #cmakedefine PMALLOC_MULTIPAGE_ALLOC
 
+/** \brief Page size to use when creating a pool if none is specified
+ * \sa pmalloc_create_pool()
+ */
+#cmakedefine PMALLOC_DEFAULT_PAGESIZE @PMALLOC_DEFAULT_PAGESIZE@
+
+/** \brief Alignment to use for allocation when none is specified
+ * \sa pmalloc()
+ */
+#cmakedefine PMALLOC_DEFAULT_ALIGNMENT @PMALLOC_DEFAULT_ALIGNMENT@
+
 
 /** \brief Defined if the target platform is Unix-like, including `APPLE` */
 #cmakedefine PMALLOC_LINUX
@@ -52,7 +62,7 @@
 /** \brief Defined if the functions should be thread-safe */
 #cmakedefine PMALLOC_THREADS
 
-#ifdef PMALLOC_THREADS
+#if defined(PMALLOC_THREADS)
     /** \brief Defined if the thread library found was `pthreads` */
 #   cmakedefine PMALLOC_PTHREADS
     /** \brief Defined if the thread library found was for Windows */
