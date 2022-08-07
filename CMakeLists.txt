@@ -16,7 +16,9 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_EXTENSIONS ON)
 
 # The directory for CMake configurations isn't set by default
-set(INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/pmalloc/cmake/")
+set(
+  PMALLOC_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/pmalloc/cmake/"
+  CACHE PATH "Where to install the CMake configuration of this package")
 
 
 # Figure out what platform we're on and set variables accordingly. Die if we
@@ -105,7 +107,7 @@ foreach(cfg static shared)
     FILE_SET HEADERS)
   install(EXPORT ${target}-export
     FILE "${target}.cmake"
-    DESTINATION "${INSTALL_CONFIGDIR}"
+    DESTINATION "${PMALLOC_INSTALL_CONFIGDIR}"
     NAMESPACE pmalloc::)
 endforeach()
 
@@ -115,7 +117,6 @@ endforeach()
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake.in"
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake"
-  INSTALL_DESTINATION "${INSTALL_CONFIGDIR}"
-  PATH_VARS INSTALL_CONFIGDIR)
+  INSTALL_DESTINATION "${PMALLOC_INSTALL_CONFIGDIR}")
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake"
-  DESTINATION "${INSTALL_CONFIGDIR}")
+  DESTINATION "${PMALLOC_INSTALL_CONFIGDIR}")
