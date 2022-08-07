@@ -2,23 +2,19 @@
 // Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
 
 #include <assert.h>
+#include <stdlib.h>
+#include <signal.h>
 
 #include "pmalloc/pmalloc.h"
 #include "pmalloc/internals.h"
 
-#if defined(PMALLOC_LINUX) || defined(PMALLOC_WIN32)
-#   include <stdlib.h>
-#   include <signal.h>
-    void segv_handler(int signal) {
-        assert(signal == SIGSEGV);
-        exit(0);
-    }
-#endif
+void segv_handler(int signal) {
+    assert(signal == SIGSEGV);
+    exit(0);
+}
 
 int main(void) {
-    #if defined(PMALLOC_LINUX) || defined(PMALLOC_WIN32)
-        signal(SIGSEGV, segv_handler);
-    #endif
+    signal(SIGSEGV, segv_handler);
 
     pmalloc_pool_t *pool = pmalloc_create_pool();
     char *x = pmalloc(pool, 1);
