@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.23)
 project(pmalloc LANGUAGES C)
 
 include(GNUInstallDirs)
+include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 include(CTest)
 
@@ -15,6 +16,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(PMALLOC_MULTIPAGE_ALLOC "Allow allocations larger than one page" ON)
 set(PMALLOC_DEFAULT_PAGESIZE 4096 CACHE STRING "Default size of pool pages")
 set(PMALLOC_DEFAULT_ALIGNMENT 3 CACHE STRING "Default alignment of objects")
+set(PMALLOC_THREADS ON CACHE BOOL "Make the functions thread-safe")
 
 set(
   PMALLOC_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/pmalloc/cmake/"
@@ -40,9 +42,6 @@ if(NOT DEFINED arch)
   message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM}")
 endif()
 include("cmake/arch-${arch}.cmake" OPTIONAL)
-
-# Whether to have thread-safe functions
-set(PMALLOC_THREADS ON CACHE BOOL "Make the functions thread-safe")
 
 # If we want thread safety, we need a thread library. Set variables based on
 # which one we find
