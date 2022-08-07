@@ -55,8 +55,8 @@ endif()
 
 # Add configuration information to headers
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.in.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.h")
+  "${CMAKE_SOURCE_DIR}/include/pmalloc/config.in.h"
+  "${CMAKE_SOURCE_DIR}/include/pmalloc/config.h")
 
 # TODO: Add Windows support
 if(arch STREQUAL "win32")
@@ -81,11 +81,11 @@ foreach(cfg static shared)
   add_library(${target} ${lib_type})
   set_target_properties(${target} PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME})
   target_include_directories(${target}
-    PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+    PRIVATE "${CMAKE_SOURCE_DIR}/include/")
   target_sources(${target}
     PRIVATE
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/pmalloc.c"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/arch/${arch}.c")
+      "${CMAKE_SOURCE_DIR}/src/pmalloc.c"
+      "${CMAKE_SOURCE_DIR}/src/arch/${arch}.c")
   if(PMALLOC_THREADS)
     target_link_libraries(${target} PUBLIC Threads::Threads)
   endif()
@@ -93,10 +93,10 @@ foreach(cfg static shared)
   # The custom file set of all the headers to install.
   target_sources(${target}
     PUBLIC FILE_SET HEADERS
-    BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+    BASE_DIRS "${CMAKE_SOURCE_DIR}/include/"
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/pmalloc.h"
-      "${CMAKE_CURRENT_SOURCE_DIR}/include/pmalloc/config.h")
+      "${CMAKE_SOURCE_DIR}/include/pmalloc/pmalloc.h"
+      "${CMAKE_SOURCE_DIR}/include/pmalloc/config.h")
 
   # Turn warnings into errors. We shouldn't have any warnings to begin with.
   if(MSVC)
@@ -117,14 +117,23 @@ foreach(cfg static shared)
     NAMESPACE pmalloc::)
 endforeach()
 
+# Alias the targets for ease of use. Also check that something was built.
+if(BUILD_STATIC_LIBS)
+  add_library(pmalloc ALIAS pmalloc-static)
+elseif(BUILD_SHARED_LIBS)
+  add_library(pmalloc ALIAS pmalloc-shared)
+else()
+  message(FATAL_ERROR "Neither static nor shared libraries were built")
+endif()
+
 
 # Create and install the package configuration file. Be sure to pass the path
 # where all the configurations were installed.
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake"
+  "${CMAKE_SOURCE_DIR}/cmake/pmalloc-config.cmake.in"
+  "${CMAKE_SOURCE_DIR}/cmake/pmalloc-config.cmake"
   INSTALL_DESTINATION "${PMALLOC_INSTALL_CONFIGDIR}")
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/cmake/pmalloc-config.cmake"
+install(FILES "${CMAKE_SOURCE_DIR}/cmake/pmalloc-config.cmake"
   DESTINATION "${PMALLOC_INSTALL_CONFIGDIR}")
 
 
