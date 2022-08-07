@@ -31,7 +31,7 @@ function(add_simple_test test_dir test_name)
   # Set any given properties
   if(ARGC GREATER_EQUAL 4)
     list(SUBLIST ARGV 3 -1 test_props)
-    set_property(TEST "${test_long_name}" PROPERTY ${test_props})
+    set_tests_properties("${test_long_name}" PROPERTIES ${test_props})
   endif()
 endfunction()
 
@@ -39,30 +39,38 @@ endfunction()
 add_simple_test(
   "simple" "create-destroy"
   "Create and destroy pool"
-  LABEL "Simple")
+  LABELS "Simple")
 add_simple_test(
   "simple" "create-protect-destroy"
   "Create, protect, then destroy pool"
-  LABEL "Simple")
+  LABELS "Simple")
 
 add_simple_test(
   "alloc" "simple"
   "Allocate data from pool"
-  LABEL "Allocation")
+  LABELS "Allocation")
 add_simple_test(
   "alloc" "alignment"
   "Allocate data with alignment"
-  LABEL "Allocation")
+  LABELS "Allocation")
 add_simple_test(
   "alloc" "multipage"
   "Allocate in multiple pages"
-  LABEL "Allocation")
+  LABELS "Allocation")
 
 add_simple_test(
   "protect" "simple"
   "Protect data inside pool"
-  LABEL "Protection")
+  LABELS "Protection")
 add_simple_test(
   "protect" "write"
   "Fail to write protected data"
-  LABEL "Protection" WILL_FAIL TRUE)
+  LABELS "Protection")
+add_simple_test(
+  "protect/multiple-alloc" "read-ro"
+  "Allocate and protect multiple times"
+  LABELS "Protection")
+add_simple_test(
+  "protect/multiple-alloc" "write-ro"
+  "Ensure protection work with multiple"
+  LABELS "Protection")

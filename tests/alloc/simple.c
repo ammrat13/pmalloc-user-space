@@ -19,10 +19,10 @@ int main(void) {
     assert(pool->head->bp_offset == (ptrdiff_t) x - (ptrdiff_t) pool->head);
     assert(pool->head->bp_offset == PMALLOC_DEFAULT_PAGESIZE - 7);
 
-    for(size_t i = 0; i < 7; i++) {
+    for (size_t i = 0; i < 7; i++) {
         x[i] = 'A' + i;
     }
-    for(size_t i = 0; i < 7; i++) {
+    for (size_t i = 0; i < 7; i++) {
         assert(x[i] == 'A' + i);
     }
 

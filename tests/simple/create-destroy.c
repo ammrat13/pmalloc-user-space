@@ -10,7 +10,7 @@
 int main(void) {
     pmalloc_pool_t *pool = pmalloc_create_pool();
 
-    for(size_t i = 0; i < 10; i++) {
+    for (size_t i = 0; i < 10; i++) {
         pmalloc_protect_pool(pool);
     }
 

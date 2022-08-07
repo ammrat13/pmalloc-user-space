@@ -18,9 +18,11 @@ int main(void) {
     signal(SIGSEGV, segv_handler);
 
     pmalloc_pool_t *pool = pmalloc_create_pool();
-    char *x = pmalloc(pool, 1);
 
+    char *x = pmalloc(pool, 1);
     pmalloc_protect_pool(pool);
+    char *y = pmalloc(pool, 1);
+
     *x = 'A';
 
     assert(false);
