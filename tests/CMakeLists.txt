@@ -68,3 +68,7 @@ add_simple_test(
   "alloc" "alignment"
   "Allocate data with alignment"
   VALGRIND TRUE)
+  add_simple_test(
+    "alloc" "multipage"
+    "Allocate in multiple pages"
+    VALGRIND TRUE)
