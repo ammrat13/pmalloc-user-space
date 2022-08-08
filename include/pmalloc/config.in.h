@@ -61,9 +61,13 @@
 #cmakedefine PMALLOC_WIN32
 
 #if defined(PMALLOC_WIN32)
+    /** \brief If we're on Windows and building in static mode */
+#   cmakedefine PMALLOC_IS_STATIC
+    /** \brief If we're on Windows and building in shared mode */
+#   cmakedefine PMALLOC_IS_SHARED
+
     /** \brief Round the page size up to the nearest physical page */
 #   cmakedefine PMALLOC_ROUND_PAGESIZE
-
     /** \brief Assert that page sizes are exactly their "normal" values */
 #   cmakedefine PMALLOC_AGGRESSIVE_PAGESIZE_CHECKS
 #endif

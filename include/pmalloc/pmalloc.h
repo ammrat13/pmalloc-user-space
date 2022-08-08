@@ -21,6 +21,17 @@
 
 #include "pmalloc/config.h"
 
+#if (defined(PMALLOC_WIN32) && defined(PMALLOC_IS_SHARED)) || defined(DOXYGEN)
+#   if defined(PMALLOC_EXPORTS) || defined(DOXYGEN)
+        /** \brief Marker for DLL functions on Windows */
+#       define PMALLOC_API __declspec(dllexport)
+#   else
+#       define PMALLOC_API __declspec(dllimport)
+#   endif
+#else
+#   define PMALLOC_API
+#endif
+
 
 /** \brief Opaque handle to a pool managed by `pmalloc`
  *
@@ -72,7 +83,7 @@ typedef struct pmalloc_pool_t pmalloc_pool_t;
  *
  * \sa pmalloc_destroy_pool()
  */
-pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size);
+PMALLOC_API pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size);
 
 /** \brief Calls pmalloc_create_custom_pool() with the default page size
  * \sa PMALLOC_DEFAULT_PAGE_SIZE
@@ -93,7 +104,7 @@ static inline pmalloc_pool_t *pmalloc_create_pool(void) {
  *
  * \param [in] pool Handle of the pool to destroy
  */
-void pmalloc_destroy_pool(pmalloc_pool_t *pool);
+PMALLOC_API void pmalloc_destroy_pool(pmalloc_pool_t *pool);
 
 /** \brief Mark a pool as read only given its handle
  *
@@ -106,7 +117,7 @@ void pmalloc_destroy_pool(pmalloc_pool_t *pool);
  *
  * \param [in] pool Handle of the pool to destroy
  */
-void pmalloc_protect_pool(pmalloc_pool_t *pool);
+PMALLOC_API void pmalloc_protect_pool(pmalloc_pool_t *pool);
 
 /**@}*/
 
@@ -132,7 +143,10 @@ void pmalloc_protect_pool(pmalloc_pool_t *pool);
  * \param align The log-base-2 of the alignment needed
  * \return Pointer to the allocated memory
  */
-void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align);
+PMALLOC_API void *pmalloc_align(
+    pmalloc_pool_t *pool,
+    size_t size,
+    size_t align);
 
 /** \brief Calls pmalloc_align() with the supplied arguments and the default
  *         alignment

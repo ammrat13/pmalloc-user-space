@@ -6,7 +6,7 @@
 #include "pmalloc/internals.h"
 
 
-pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size) {
+PMALLOC_API pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size) {
     // Error checking the arguments. The page size cannot be zero - it just
     // doesn't make sense.
     assert(page_size != 0);
@@ -23,7 +23,7 @@ pmalloc_pool_t *pmalloc_create_custom_pool(size_t page_size) {
     return ret;
 }
 
-void pmalloc_destroy_pool(pmalloc_pool_t *pool) {
+PMALLOC_API void pmalloc_destroy_pool(pmalloc_pool_t *pool) {
     // Error checking the arguments. Behave like `free` and don't do anything if
     // passed a `NULL` pool.
     assert(pool);
@@ -49,7 +49,7 @@ void pmalloc_destroy_pool(pmalloc_pool_t *pool) {
     pmalloc_free_pool(pool);
 }
 
-void pmalloc_protect_pool(pmalloc_pool_t *pool) {
+PMALLOC_API void pmalloc_protect_pool(pmalloc_pool_t *pool) {
     // Error checking the arguments. Don't do anything if the argument is
     // `NULL`.
     assert(pool);
@@ -77,7 +77,11 @@ void pmalloc_protect_pool(pmalloc_pool_t *pool) {
     #endif
 }
 
-void *pmalloc_align(pmalloc_pool_t *pool, size_t size, size_t align) {
+PMALLOC_API void *pmalloc_align(
+    pmalloc_pool_t *pool,
+    size_t size,
+    size_t align
+) {
     // Error checking the arguments. The `pool` obviously has to be non-null.
     // It's not an error to pass zero in for the size, so just return `NULL`.
     assert(pool);

@@ -4,7 +4,6 @@
 
 cmake_minimum_required(VERSION 3.23)
 project(pmalloc LANGUAGES C)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 
 include(GNUInstallDirs)
 include(CMakeDependentOption)
@@ -38,10 +37,6 @@ if(UNIX)
 elseif(WIN32)
   set(PMALLOC_WIN32 ON)
   set(arch "win32")
-  if(BUILD_STATIC_LIBS AND BUILD_SHARED_LIBS)
-    message(FATAL_ERROR
-        "Static and shared libraries can't be built at the same time on Windows")
-  endif()
 endif()
 if(NOT DEFINED arch)
   message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM}")
@@ -97,6 +92,11 @@ foreach(cfg static shared)
     FILES
       "${CMAKE_SOURCE_DIR}/include/pmalloc/pmalloc.h"
       "${CMAKE_SOURCE_DIR}/include/pmalloc/config.h")
+
+  # On Windows, define the export macro. We're building the library after all.
+  if(PMALLOC_WIN32 AND cfg STREQUAL "shared")
+    target_compile_definitions(${target} PRIVATE PMALLOC_EXPORTS)
+  endif()
 
   # Turn warnings into errors. We shouldn't have any warnings to begin with.
   if(MSVC)
