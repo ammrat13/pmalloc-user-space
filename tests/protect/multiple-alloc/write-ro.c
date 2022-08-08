@@ -10,7 +10,7 @@
 
 void segv_handler(int signal) {
     assert(signal == SIGSEGV);
-    exit(SIGSEGV);
+    exit(0);
 }
 
 
@@ -25,6 +25,5 @@ int main(void) {
 
     *x = 'A';
 
-    // Assert unreachable
-    return 0;
+    assert(false);
 }

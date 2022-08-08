@@ -65,7 +65,7 @@ add_simple_test(
 add_simple_test(
   "protect" "write"
   "Fail to write protected data"
-  WILL_FAIL TRUE LABELS "Protection")
+  LABELS "Protection")
 add_simple_test(
   "protect/multiple-alloc" "read-ro"
   "Allocate and protect multiple times"
@@ -73,4 +73,4 @@ add_simple_test(
 add_simple_test(
   "protect/multiple-alloc" "write-ro"
   "Ensure protection work with multiple"
-  WILL_FAIL TRUE LABELS "Protection")
+  LABELS "Protection")
