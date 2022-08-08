@@ -53,6 +53,16 @@ jobs:
           working_directory: ./build/
           command: ctest --parallel $(nproc) -T memcheck -L Memcheck
 
+      - run:
+          name: Save Core Dumps
+          working_directory: ./build/
+          when: on_fail
+          command: |
+            mkdir -p /tmp/core_dumps/ \
+            find . -name "core.*" -exec cp "{}" /tmp/core_dumps/ \;
+      - store_artifacts:
+          path: /tmp/core_dumps/
+
       - store_artifacts:
           path: ./build/libpmalloc.a
       - store_artifacts:
