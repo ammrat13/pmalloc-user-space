@@ -18,6 +18,13 @@
 #   error "This file contains code specific to Windows"
 #endif
 
+// Sometimes, we only use a variable in an assert. Use this macro to mark them.
+#if defined(NDEBUG)
+#   define FOR_ASSERT(x) ((void) x)
+#else
+#   define FOR_ASSERT(x)
+#endif
+
 
 void* pmalloc_alloc_pool(void) {
     void* ret = malloc(sizeof(pmalloc_pool_t));
@@ -59,6 +66,7 @@ void* pmalloc_alloc_page(size_t* size) {
         NULL, *size,
         MEM_COMMIT | MEM_RESERVE,
         PAGE_READWRITE);
+    FOR_ASSERT(ret);
     assert(ret);
     return ret;
 }
@@ -67,6 +75,7 @@ void pmalloc_free_page(void* ptr, size_t size) {
     assert(ptr);
     assert(size > 0);
     bool ret = VirtualFree(ptr, 0, MEM_RELEASE);
+    FOR_ASSERT(ret);
     assert(ret);
 }
 
@@ -75,6 +84,8 @@ void pmalloc_markro_page(void* ptr, size_t size) {
     assert(size > 0);
     DWORD old_protect;
     bool ret = VirtualProtect(ptr, size, PAGE_READONLY, &old_protect);
+    FOR_ASSERT(ret);
     assert(ret);
+    FOR_ASSERT(old_protect);
     assert(old_protect == PAGE_READWRITE);
 }

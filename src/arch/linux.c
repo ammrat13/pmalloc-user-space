@@ -19,6 +19,13 @@
 #   error "This file contains code specific to Linux"
 #endif
 
+// Sometimes, we only use a variable in an assert. Use this macro to mark them.
+#if defined(NDEBUG)
+#   define FOR_ASSERT(x) ((void) x)
+#else
+#   define FOR_ASSERT(x)
+#endif
+
 
 void *pmalloc_alloc_pool(void) {
     void *ret = malloc(sizeof(pmalloc_pool_t));
@@ -136,6 +143,7 @@ void *pmalloc_alloc_page(size_t *size) {
         PROT_READ | PROT_WRITE,
         MAP_PRIVATE | MAP_ANONYMOUS,
         -1, 0);
+    FOR_ASSERT(ret);
     assert(ret != MAP_FAILED);
     return ret;
 }
@@ -144,6 +152,7 @@ void pmalloc_free_page(void *ptr, size_t size) {
     assert(ptr);
     assert(size > 0);
     int ret = munmap(ptr, size);
+    FOR_ASSERT(ret);
     assert(ret == 0);
 }
 
@@ -151,6 +160,7 @@ void pmalloc_markro_page(void *ptr, size_t size) {
     assert(ptr);
     assert(size > 0);
     int ret =  mprotect(ptr, size, PROT_READ);
+    FOR_ASSERT(ret);
     assert(ret == 0);
 }
 
@@ -161,10 +171,11 @@ void pmalloc_markro_page(void *ptr, size_t size) {
 void pmalloc_alloc_mutex(pmalloc_mutex_t *mutex) {
     assert(mutex);
     int ret;
+    FOR_ASSERT(ret);
 
     #if defined(NDEBUG)
         ret = pthread_mutex_init(mutex, NULL);
-        assert(ret == 0);
+        // Asserts don't do anything in here.
     #else
         // If we're building in debug mode, add extra instrumentation to the
         // mutex to detect errors.
@@ -183,18 +194,21 @@ void pmalloc_alloc_mutex(pmalloc_mutex_t *mutex) {
 void pmalloc_free_mutex(pmalloc_mutex_t *mutex) {
     assert(mutex);
     int ret = pthread_mutex_destroy(mutex);
+    FOR_ASSERT(ret);
     assert(ret == 0);
 }
 
 void pmalloc_lock_mutex(pmalloc_mutex_t *mutex) {
     assert(mutex);
     int ret = pthread_mutex_lock(mutex);
+    FOR_ASSERT(ret);
     assert(ret == 0);
 }
 
 void pmalloc_unlock_mutex(pmalloc_mutex_t *mutex) {
     assert(mutex);
     int ret = pthread_mutex_unlock(mutex);
+    FOR_ASSERT(ret);
     assert(ret == 0);
 }
 
