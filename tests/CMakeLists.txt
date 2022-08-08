@@ -2,6 +2,9 @@
 # Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
 
 
+# If Valgrind finds an issue, that's a failure
+set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full" "--error-exitcode=1")
+
 # Function to add a "simple" test. That is, a test which is just a single file
 # and just links with `pmalloc`.
 function(add_simple_test test_dir test_name)

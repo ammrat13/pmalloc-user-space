@@ -27,7 +27,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Always Store Core Dumps
+          name: Always Generate Core Dumps
           command: ulimit -c unlimited
 
       - run:
@@ -38,12 +38,13 @@ jobs:
               -G "Unix Makefiles" -B build/ \
               -DCMAKE_BUILD_TYPE="<< parameters.config >>" \
               -DCMAKE_INSTALL_PREFIX="${PWD}/install/" \
-              -DBUILD_TESTS=ON
+              -DBUILD_TESTING=ON
 
       - run:
           name: Build
           working_directory: ./build/
           command: make -j$(nproc)
+
       - run:
           name: Test
           working_directory: ./build/
@@ -51,22 +52,51 @@ jobs:
       - run:
           name: Memcheck
           working_directory: ./build/
-          command: ctest --parallel $(nproc) -T memcheck -L Memcheck
-
+          command: |
+            ctest --parallel $(nproc) \
+              --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1" \
+              --test-action memcheck --label-regex Memcheck
       - run:
           name: Save Core Dumps
           working_directory: ./build/
           when: on_fail
           command: |
-            mkdir -p /tmp/core_dumps/ \
-            find . -name "core.*" -exec cp "{}" /tmp/core_dumps/ \;
-      - store_artifacts:
-          path: /tmp/core_dumps/
+            mkdir -p /tmp/core_dumps/
+            find . -name "core.*" \
+              -exec cp "{}" /tmp/core_dumps/ \;
+      - run:
+          name: Save Memory Check Output
+          working_directory: build/
+          when: on_fail
+          command: |
+            mkdir -p /tmp/memcheck/
+            find . -name "MemoryChecker.*.log" \
+              -exec cp "{}" /tmp/memcheck/ \;
+
+      - when:
+          condition:
+            equal: [ << parameters.config >>, "Release" ]
+          steps:
+            - run:
+                name: Install
+                working_directory: build/
+                command: make install
+            - run:
+                name: Save Install Tree
+                working_directory: "."
+                command: |
+                  mkdir -p /tmp/
+                  tar czf /tmp/install.tar.gz install/
 
       - store_artifacts:
-          path: ./build/libpmalloc.a
+          path: /tmp/core_dumps/
+          destination: core_dumps
       - store_artifacts:
-          path: ./build/libpmalloc.so
+          path: /tmp/memcheck/
+          destination: memcheck
+      - store_artifacts:
+          path: /tmp/install.tar.gz
+          destination: install.tar.gz
 
 
 workflows:
