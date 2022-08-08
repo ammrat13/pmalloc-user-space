@@ -4,6 +4,7 @@
 
 cmake_minimum_required(VERSION 3.23)
 project(pmalloc LANGUAGES C)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1)
 
 include(GNUInstallDirs)
 include(CMakeDependentOption)
@@ -37,6 +38,10 @@ if(UNIX)
 elseif(WIN32)
   set(PMALLOC_WIN32 ON)
   set(arch "win32")
+  if(BUILD_STATIC_LIBS AND BUILD_SHARED_LIBS)
+    message(FATAL_ERROR
+        "Static and shared libraries can't be built at the same time on Windows")
+  endif()
 endif()
 if(NOT DEFINED arch)
   message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM}")
