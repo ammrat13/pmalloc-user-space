@@ -3,6 +3,6 @@
 
 FROM alpine:3.16.1
 RUN \
-    apk add --no-cache build-base cmake py3-pip \
+    apk add --no-cache build-base cmake py3-pip valgrind \
     && pip install --no-cache-dir cpplint
 WORKDIR /work/

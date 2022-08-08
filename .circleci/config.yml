@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2022  Ammar Ratnani <ammrat13@gmail.com>
+version: 2.1
+
+executors:
+  executor:
+    docker:
+      - image: ammrat13/pmalloc-user-space
+        auth:
+          username: ammrat13
+          password: ${DOCKERHUB_PASSWORD}
+    resource_class: small
+
+
+jobs:
+
+  lint:
+    executor: executor
+    steps:
+      - checkout
+      - run: cpplint --recursive .
+
+  build:
+    executor: executor
+    parameters:
+      config:
+        description: what configuration to build and test
+        type: enum
+        enum: [ "Debug", "Release" ]
+    steps:
+      - checkout
+      - run:
+          name: Configure
+          working_directory: "."
+          command: |
+            cmake \
+              -G "Unix Makefiles" -B build/ \
+              -DCMAKE_BUILD_TYPE="<< parameters.config >>" \
+              -DCMAKE_INSTALL_PREFIX="${PWD}/install/" \
+              -DBUILD_TESTS=ON
+      - run:
+          name: Build
+          working_directory: ./build/
+          command: make -j$(nproc)
+      - run:
+          name: Test
+          working_directory: ./build/
+          command: ctest --parallel $(nproc)
+      - run:
+          name: Memcheck
+          working_directory: ./build/
+          command: ctest --parallel $(nproc) -T memcheck -L Memcheck
+
+
+workflows:
+  on-push:
+    jobs:
+      - lint
+      - build:
+          requires: [ "lint" ]
+          matrix:
+            parameters:
+              config: [ "Debug", "Release" ]
