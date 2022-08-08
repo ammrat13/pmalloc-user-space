@@ -6,9 +6,6 @@ executors:
   executor:
     docker:
       - image: ammrat13/pmalloc-user-space
-        auth:
-          username: ammrat13
-          password: ${DOCKERHUB_PASSWORD}
     resource_class: small
 
 
