@@ -27,6 +27,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Always Store Core Dumps
+          command: ulimit -c unlimited
+
+      - run:
           name: Configure
           working_directory: "."
           command: |
@@ -35,6 +39,7 @@ jobs:
               -DCMAKE_BUILD_TYPE="<< parameters.config >>" \
               -DCMAKE_INSTALL_PREFIX="${PWD}/install/" \
               -DBUILD_TESTS=ON
+
       - run:
           name: Build
           working_directory: ./build/
@@ -47,6 +52,11 @@ jobs:
           name: Memcheck
           working_directory: ./build/
           command: ctest --parallel $(nproc) -T memcheck -L Memcheck
+
+      - store_artifacts:
+          path: ./build/libpmalloc.a
+      - store_artifacts:
+          path: ./build/libpmalloc.so
 
 
 workflows:
